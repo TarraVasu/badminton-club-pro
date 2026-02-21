@@ -1,0 +1,8 @@
+[build]
+  base = "badminton-app"
+  publish = "dist/badminton-app"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18.20.2"
+  NPM_FLAGS = "--legacy-peer-deps"
