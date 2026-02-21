@@ -1,0 +1,35 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'badminton-app/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'badminton-app/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        cache: 'npm'
+        cache-dependency-path: badminton-app/package-lock.json
+
+    - name: Install dependencies
+      run: |
+        cd badminton-app
+        npm install --legacy-peer-deps
+
+    - name: Build
+      run: |
+        cd badminton-app
+        npm run build

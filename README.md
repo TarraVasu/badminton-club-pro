@@ -1,5 +1,7 @@
 # 🏸 Badminton Club Pro
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/6999a90a-70b5-ee6c-c210-36b2/deploy-status)](https://app.netlify.com/sites/cute-jalebi-8a91b6/deploys)
+
 A premium, full-stack management system for badminton clubs. Features include player rankings, match scheduling, session management, and a secure admin dashboard.
 
 ## 🚀 Features
