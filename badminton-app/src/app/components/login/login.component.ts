@@ -7,8 +7,8 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  email = 'admin@mail.com';
-  password = 'password';
+  email = '';
+  password = '';
   showPassword = false;
   isLoading = false;
 
