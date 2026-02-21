@@ -1,0 +1,1 @@
+web: gunicorn badminton_backend.wsgi --log-file -
