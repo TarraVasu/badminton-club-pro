@@ -17,8 +17,7 @@ export class AuthService {
         return this._isLoggedIn;
     }
 
-    login(email: string, pass: string) {
-        const username = email.split('@')[0]; // Using 'admin' from 'admin@mail.com'
+    login(username: string, pass: string) {
         this.http.post<any>(`${this.baseUrl}/api-token-auth/`, { username, password: pass })
             .subscribe({
                 next: (res) => {
