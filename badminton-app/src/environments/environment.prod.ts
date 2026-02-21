@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://badminton-backend.onrender.com/api',
-    baseUrl: 'https://badminton-backend.onrender.com'
+    apiUrl: 'https://badminton-club-pro.onrender.com/api',
+    baseUrl: 'https://badminton-club-pro.onrender.com'
 };
