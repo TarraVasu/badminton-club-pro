@@ -1,0 +1,35 @@
+<div class="sidebar" [class.collapsed]="collapsed" [class.mobile-open]="mobileOpen">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🏸</div>
+    <div class="logo-text" *ngIf="!collapsed">
+      <span class="logo-title">Badminton</span>
+      <span class="logo-sub">Club Pro</span>
+    </div>
+    <button class="toggle-btn" (click)="toggleSidebar()">
+      <span>{{ collapsed ? '›' : '‹' }}</span>
+    </button>
+  </div>
+
+  <div class="sidebar-section" *ngIf="!collapsed">
+    <span class="section-label">Main</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a *ngFor="let item of navItems" class="nav-item" [class.active]="activeRoute === item.route"
+      (click)="navigate(item.route)" [title]="collapsed ? item.label : ''">
+      <span class="nav-icon">{{ item.icon }}</span>
+      <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+      <span class="nav-badge" *ngIf="item.badge && !collapsed">{{ item.badge }}</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer" *ngIf="!collapsed">
+    <div class="club-info">
+      <div class="club-icon">🏆</div>
+      <div>
+        <p class="club-name">Premier Badminton Club</p>
+        <p class="club-status"><span class="status-dot"></span> Season Active</p>
+      </div>
+    </div>
+  </div>
+</div>

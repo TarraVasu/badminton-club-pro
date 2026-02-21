@@ -1,0 +1,124 @@
+<div class="leaderboard fade-in">
+    <div class="page-header">
+        <div>
+            <h1>🏆 Leaderboard</h1>
+            <p>Rankings based on points, wins, and performance</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-outline">📊 Stats</button>
+            <button class="btn btn-primary">🔄 Refresh</button>
+        </div>
+    </div>
+
+    <!-- Podium (Top 3) -->
+    <div class="podium" *ngIf="leaderboard.length > 0">
+        <div class="podium-item second" *ngIf="leaderboard[1]">
+            <div class="podium-medal">🥈</div>
+            <div class="podium-avatar" style="background: linear-gradient(135deg,#6c63ff,#ff6b35);">
+                <img *ngIf="leaderboard[1].image" [src]="leaderboard[1].image" alt="P2" class="avatar-img">
+                <span *ngIf="!leaderboard[1].image">{{ leaderboard[1].avatar }}</span>
+            </div>
+            <p class="podium-name">{{ leaderboard[1].name }}</p>
+            <p class="podium-pts">{{ leaderboard[1].points }} pts</p>
+            <div class="podium-block p2">2</div>
+        </div>
+        <div class="podium-item first" *ngIf="leaderboard[0]">
+            <div class="champion-crown">👑</div>
+            <div class="podium-medal">🥇</div>
+            <div class="podium-avatar champion-ring" style="background: var(--gradient-primary);">
+                <img *ngIf="leaderboard[0].image" [src]="leaderboard[0].image" alt="P1" class="avatar-img">
+                <span *ngIf="!leaderboard[0].image">{{ leaderboard[0].avatar }}</span>
+            </div>
+            <p class="podium-name champion-name">{{ leaderboard[0].name }}</p>
+            <p class="podium-pts">{{ leaderboard[0].points }} pts</p>
+            <div class="podium-block p1">1</div>
+        </div>
+        <div class="podium-item third" *ngIf="leaderboard[2]">
+            <div class="podium-medal">🥉</div>
+            <div class="podium-avatar" style="background: linear-gradient(135deg,#3b82f6,#00d4aa);">
+                <img *ngIf="leaderboard[2].image" [src]="leaderboard[2].image" alt="P3" class="avatar-img">
+                <span *ngIf="!leaderboard[2].image">{{ leaderboard[2].avatar }}</span>
+            </div>
+            <p class="podium-name">{{ leaderboard[2].name }}</p>
+            <p class="podium-pts">{{ leaderboard[2].points }} pts</p>
+            <div class="podium-block p3">3</div>
+        </div>
+    </div>
+
+    <!-- Full Rankings Table -->
+    <div class="card">
+        <div class="card-header">
+            <h3>🏅 Full Rankings</h3>
+        </div>
+        <table class="data-table" *ngIf="leaderboard.length > 0">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Level</th>
+                    <th>Matches</th>
+                    <th>W / L</th>
+                    <th>Win Rate</th>
+                    <th>Points</th>
+                    <th>Trend</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let p of leaderboard" [class.top-three]="p.rank <= 3">
+                    <td>
+                        <span class="rank-badge" [ngClass]="getRankClass(p.rank)">
+                            {{ p.rank <= 3 ? getRankEmoji(p.rank) : '#' + p.rank }} </span>
+                    </td>
+                    <td>
+                        <div class="lb-player">
+                            <div class="lb-avatar" [style.background]="getColor(p.rank - 1)">
+                                <img *ngIf="p.image" [src]="p.image" alt="Avatar" class="avatar-img">
+                                <span *ngIf="!p.image">{{ p.avatar }}</span>
+                            </div>
+                            <div>
+                                <p class="lb-name">{{ p.name }}</p>
+                                <p class="lb-email">{{ p.email }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="level-chip" [ngClass]="getLevelClass(p.level)">{{ p.level }}</span>
+                    </td>
+                    <td>
+                        <span class="match-count">{{ p.matchesPlayed }}</span>
+                    </td>
+                    <td>
+                        <span class="wl-cell">
+                            <span class="wins">{{ p.wins }}W</span>
+                            <span class="separator">·</span>
+                            <span class="losses">{{ p.losses }}L</span>
+                        </span>
+                    </td>
+                    <td>
+                        <div class="wr-cell">
+                            <span class="wr-pct">{{ p.winRate }}%</span>
+                            <div class="progress-bar" style="width:80px">
+                                <div class="progress" [style.width.%]="p.winRate"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="points-badge"
+                            [style.color]="p.rank === 1 ? 'var(--warning)' : p.rank <= 3 ? 'var(--primary)' : 'var(--text-primary)'">
+                            {{ p.points }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="trend up" *ngIf="p.rank <= 4">▲ {{ getRandom(1,5) }}</span>
+                        <span class="trend down" *ngIf="p.rank > 4">▼ {{ getRandom(1,3) }}</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="empty-state" *ngIf="leaderboard.length === 0">
+            <div class="empty-icon">🏆</div>
+            <h3>No rankings yet</h3>
+            <p>Once players start playing matches, you'll see the rankings here.</p>
+        </div>
+    </div>
+</div>

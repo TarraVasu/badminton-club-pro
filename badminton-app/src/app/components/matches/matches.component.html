@@ -1,0 +1,223 @@
+<div class="matches fade-in">
+    <div class="page-header">
+        <div>
+            <h1>🏸 Matches</h1>
+            <p>Track all {{ matches.length }} matches — live, scheduled and completed</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-outline">📊 Stats</button>
+            <button class="btn btn-primary" (click)="openScheduleModal()">+ Schedule Match</button>
+        </div>
+    </div>
+
+    <!-- Live Match Banner -->
+    <div class="live-banner" *ngIf="liveMatch">
+        <div class="live-pulse"></div>
+        <div class="live-info">
+            <span class="live-tag">🔴 LIVE NOW</span>
+            <span class="live-match">{{ liveMatch.player1 }} vs {{ liveMatch.player2 }}</span>
+            <span class="live-court">{{ liveMatch.court }}</span>
+        </div>
+        <div class="live-score">Ongoing</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab" [class.active]="activeTab === 'all'" (click)="activeTab = 'all'">All Matches</div>
+        <div class="tab" [class.active]="activeTab === 'live'" (click)="activeTab = 'live'">🔴 Live</div>
+        <div class="tab" [class.active]="activeTab === 'scheduled'" (click)="activeTab = 'scheduled'">Scheduled</div>
+        <div class="tab" [class.active]="activeTab === 'completed'" (click)="activeTab = 'completed'">Completed</div>
+    </div>
+
+    <!-- Matches Table -->
+    <div class="card">
+        <table class="data-table" *ngIf="filteredMatches.length > 0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Player 1</th>
+                    <th>Score</th>
+                    <th>Player 2</th>
+                    <th>Date</th>
+                    <th>Court</th>
+                    <th>Type</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let m of filteredMatches" [class.live-row]="m.status === 'Live'">
+                    <td><span class="match-id">#{{ m.id }}</span></td>
+                    <td>
+                        <div class="player-cell" [class.winner]="m.winner === m.player1">
+                            <div class="player-dot"
+                                [style.background]="m.winner === m.player1 ? 'var(--primary)' : 'var(--text-muted)'">
+                            </div>
+                            {{ m.player1 }}
+                            <span class="crown" *ngIf="m.winner === m.player1 && m.status === 'Completed'">👑</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="score-cell" *ngIf="m.status !== 'Scheduled'">
+                            <span [class.winning-score]="m.score1 > m.score2">{{ m.score1 }}</span>
+                            <span class="score-sep">—</span>
+                            <span [class.winning-score]="m.score2 > m.score1">{{ m.score2 }}</span>
+                        </div>
+                        <span class="tbd" *ngIf="m.status === 'Scheduled'">TBD</span>
+                    </td>
+                    <td>
+                        <div class="player-cell" [class.winner]="m.winner === m.player2">
+                            <div class="player-dot"
+                                [style.background]="m.winner === m.player2 ? 'var(--primary)' : 'var(--text-muted)'">
+                            </div>
+                            {{ m.player2 }}
+                            <span class="crown" *ngIf="m.winner === m.player2 && m.status === 'Completed'">👑</span>
+                        </div>
+                    </td>
+                    <td><span class="date-cell">{{ m.date | date:'dd MMM' }}</span></td>
+                    <td><span class="court-pill">{{ m.court }}</span></td>
+                    <td><span class="badge badge-purple">{{ m.type }}</span></td>
+                    <td><span class="duration">⏱ {{ m.duration }}</span></td>
+                    <td>
+                        <span class="badge" [ngClass]="getStatusClass(m.status)">
+                            {{ m.status === 'Live' ? '🔴 ' : '' }}{{ m.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="action-btn" title="Enter Score" *ngIf="m.status !== 'Completed'"
+                                (click)="openScoreModal(m)">🎯</button>
+                            <button class="action-btn danger" title="Delete" (click)="deleteMatch(m.id)">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="empty-state" *ngIf="filteredMatches.length === 0">
+            <div class="empty-icon">🏸</div>
+            <h3>No matches found</h3>
+            <p>Try adjusting your tabs or schedule a new match.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SCHEDULE MATCH MODAL ═══ -->
+<div class="modal-overlay" *ngIf="showScheduleModal" (click)="closeScheduleModal()">
+    <div class="modal modal-lg" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title-wrap">
+                <span class="modal-icon">🏸</span>
+                <div>
+                    <h3>Schedule a Match</h3>
+                    <p class="modal-subtitle">Set up a new match between players</p>
+                </div>
+            </div>
+            <button class="close-btn" (click)="closeScheduleModal()">✕</button>
+        </div>
+
+        <div class="players-vs-row">
+            <div class="vs-player">
+                <label>Player 1 *</label>
+                <select [(ngModel)]="newMatch.player1">
+                    <option value="">Select Player</option>
+                    <option *ngFor="let p of playerNames" [value]="p">{{ p }}</option>
+                </select>
+            </div>
+            <div class="vs-badge">VS</div>
+            <div class="vs-player">
+                <label>Player 2 *</label>
+                <select [(ngModel)]="newMatch.player2">
+                    <option value="">Select Player</option>
+                    <option *ngFor="let p of playerNames" [value]="p">{{ p }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-section-title">Match Details</div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Match Date *</label>
+                <input type="date" [(ngModel)]="newMatch.date">
+            </div>
+            <div class="form-group">
+                <label>Match Time</label>
+                <input type="time" [(ngModel)]="newMatch.time">
+            </div>
+            <div class="form-group">
+                <label>Court *</label>
+                <select [(ngModel)]="newMatch.court">
+                    <option value="">Select Court</option>
+                    <option value="Court A">Court A</option>
+                    <option value="Court B">Court B</option>
+                    <option value="Court C">Court C</option>
+                    <option value="Court D">Court D</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Match Type</label>
+                <select [(ngModel)]="newMatch.type">
+                    <option value="Singles">Singles</option>
+                    <option value="Doubles">Doubles</option>
+                    <option value="Mixed Doubles">Mixed Doubles</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Notes / Instructions</label>
+            <textarea [(ngModel)]="newMatch.notes" rows="2"
+                placeholder="Any special instructions or notes for this match..."></textarea>
+        </div>
+
+        <div class="form-error" *ngIf="matchFormError">⚠️ {{ matchFormError }}</div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" (click)="closeScheduleModal()">Cancel</button>
+            <button class="btn btn-primary" (click)="scheduleMatch()">📅 Schedule Match</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ ENTER SCORE MODAL ═══ -->
+<div class="modal-overlay" *ngIf="showScoreModal && scoreMatch" (click)="closeScoreModal()">
+    <div class="modal" style="width:420px" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title-wrap">
+                <span class="modal-icon">🎯</span>
+                <div>
+                    <h3>Enter Match Score</h3>
+                    <p class="modal-subtitle">{{ scoreMatch.player1 }} vs {{ scoreMatch.player2 }}</p>
+                </div>
+            </div>
+            <button class="close-btn" (click)="closeScoreModal()">✕</button>
+        </div>
+
+        <div class="score-entry">
+            <div class="score-player">
+                <p class="score-player-name">{{ scoreMatch.player1 }}</p>
+                <input type="number" class="score-input" [(ngModel)]="scoreMatch.score1" min="0" max="30">
+            </div>
+            <div class="score-divider">—</div>
+            <div class="score-player">
+                <p class="score-player-name">{{ scoreMatch.player2 }}</p>
+                <input type="number" class="score-input" [(ngModel)]="scoreMatch.score2" min="0" max="30">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top:16px">
+            <label>Duration</label>
+            <input type="text" [(ngModel)]="scoreMatch.duration" placeholder="e.g. 45 min">
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select [(ngModel)]="scoreMatch.status">
+                <option value="Live">Live</option>
+                <option value="Completed">Completed</option>
+            </select>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" (click)="closeScoreModal()">Cancel</button>
+            <button class="btn btn-primary" (click)="saveScore()">💾 Save Score</button>
+        </div>
+    </div>
+</div>

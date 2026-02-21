@@ -1,0 +1,267 @@
+.mb-24 {
+    margin-bottom: 24px;
+}
+
+.table-actions {
+    .filter-select {
+        background: var(--bg-dark);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 7px 12px;
+        color: var(--text-primary);
+        font-size: 12px;
+        font-family: 'Inter', sans-serif;
+        outline: none;
+        cursor: pointer;
+        transition: var(--transition);
+
+        &:focus {
+            border-color: var(--primary);
+        }
+
+        option {
+            background: var(--bg-card);
+        }
+    }
+}
+
+.ref-id {
+    font-size: 11px;
+    font-family: monospace;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.player-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+
+    .mini-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 800;
+        color: #0a0e1a;
+        flex-shrink: 0;
+    }
+}
+
+.type-tag {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.amount-cell {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+
+    &.paid-amount {
+        color: var(--success);
+    }
+}
+
+.method-tag {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.date-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.text-muted {
+    color: var(--text-muted);
+}
+
+/* ── Amount Hero ─────────────────────────────────── */
+.amount-hero {
+    background: linear-gradient(135deg, rgba(0, 212, 170, 0.08), rgba(99, 102, 241, 0.08));
+    border: 1.5px solid rgba(0, 212, 170, 0.25);
+    border-radius: 16px;
+    padding: 20px 24px 16px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #00d4aa, #6366f1, #00d4aa);
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite linear;
+    }
+
+    .amount-hero-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        color: #00d4aa;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .amount-input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        .currency-symbol {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .amount-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 48px;
+            font-weight: 800;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-primary);
+            width: 100%;
+            padding: 0;
+            min-width: 0;
+
+            &::placeholder {
+                color: rgba(255, 255, 255, 0.15);
+            }
+
+            &::-webkit-inner-spin-button,
+            &::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+        }
+    }
+
+    .amount-hint {
+        font-size: 11px;
+        color: var(--text-muted, #5a6170);
+        margin-top: 8px;
+    }
+}
+
+@keyframes shimmer {
+    0%   { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* ── Status Pills ────────────────────────────────── */
+.status-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: 1.5px solid transparent;
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-secondary, #8892a4);
+    transition: all 0.2s ease;
+    position: relative;
+    outline: none;
+
+    .pill-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.4;
+        flex-shrink: 0;
+        transition: opacity 0.2s;
+    }
+
+    .pill-icon { font-size: 15px; }
+    .pill-label { white-space: nowrap; }
+
+    .pill-check {
+        font-size: 12px;
+        font-weight: 900;
+        margin-left: 2px;
+    }
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.07);
+        transform: translateY(-1px);
+    }
+
+    /* Per colour variants */
+    &.paid {
+        color: #4ade80;
+        border-color: rgba(74, 222, 128, 0.2);
+
+        &:hover { border-color: rgba(74, 222, 128, 0.4); }
+
+        &.active {
+            background: rgba(74, 222, 128, 0.12);
+            border-color: #4ade80;
+            color: #4ade80;
+            box-shadow: 0 0 14px rgba(74, 222, 128, 0.25);
+
+            .pill-dot { opacity: 1; }
+        }
+    }
+
+    &.pending {
+        color: #fbbf24;
+        border-color: rgba(251, 191, 36, 0.2);
+
+        &:hover { border-color: rgba(251, 191, 36, 0.4); }
+
+        &.active {
+            background: rgba(251, 191, 36, 0.12);
+            border-color: #fbbf24;
+            color: #fbbf24;
+            box-shadow: 0 0 14px rgba(251, 191, 36, 0.25);
+
+            .pill-dot { opacity: 1; }
+        }
+    }
+
+    &.overdue {
+        color: #f87171;
+        border-color: rgba(248, 113, 113, 0.2);
+
+        &:hover { border-color: rgba(248, 113, 113, 0.4); }
+
+        &.active {
+            background: rgba(248, 113, 113, 0.12);
+            border-color: #f87171;
+            color: #f87171;
+            box-shadow: 0 0 14px rgba(248, 113, 113, 0.25);
+
+            .pill-dot { opacity: 1; }
+        }
+    }
+}

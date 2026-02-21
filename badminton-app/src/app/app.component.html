@@ -1,0 +1,48 @@
+<div class="app-container">
+  <!-- Mobile sidebar backdrop -->
+  <div class="sidebar-backdrop" [class.open]="mobileOpen" (click)="closeMobileMenu()"></div>
+
+  <!-- Sidebar: fixed drawer on mobile -->
+  <app-sidebar *ngIf="auth.isLoggedIn" [mobileOpen]="mobileOpen" (collapsedChange)="sidebarCollapsed = $event"
+    (closeMenu)="closeMobileMenu()">
+  </app-sidebar>
+
+  <div class="main-content">
+    <!-- Top Bar -->
+    <div class="topbar" *ngIf="auth.isLoggedIn">
+      <div class="topbar-left" style="display:flex;align-items:center;gap:12px;">
+        <!-- Hamburger for mobile -->
+        <button class="mobile-menu-btn" (click)="toggleMobileMenu()">☰</button>
+        <div>
+          <h2>🏸 Badminton Club Pro</h2>
+          <p>Premier Badminton Management System</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search players, matches...">
+        </div>
+        <div class="icon-btn" title="Notifications">
+          🔔
+          <span class="badge">3</span>
+        </div>
+        <div class="icon-btn" title="Settings">⚙️</div>
+
+        <!-- ── Theme Toggle ── -->
+        <button class="theme-toggle-btn" [title]="themeService.isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+          (click)="themeService.toggle()" id="theme-toggle-btn">
+          <span class="toggle-icon">{{ themeService.isDark ? '☀️' : '🌙' }}</span>
+        </button>
+
+        <div class="avatar" title="Logout" (click)="auth.logout()">{{ auth.isLoggedIn ? 'AD' : '' }}</div>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content" [class.no-padding]="!auth.isLoggedIn">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  <app-toast></app-toast>
+</div>

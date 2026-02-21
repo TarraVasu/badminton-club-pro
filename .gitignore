@@ -1,0 +1,49 @@
+# Virtual Environment
+badminton-backend-env/
+venv/
+.env
+
+# Node.js
+node_modules/
+dist/
+.angular/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Database / Local tests
+db.sqlite3
+*.log
+
+# Media (optional, usually kept local)
+media/
+staticfiles/
+
+# Old projects / Backups
+Badmintion_project_Backend/
+Badmintion_project_frontend/
+

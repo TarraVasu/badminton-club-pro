@@ -1,0 +1,198 @@
+<div class="dashboard fade-in">
+    <div class="page-header">
+        <div>
+            <h1>🏸 Dashboard</h1>
+            <p>Welcome back! Here's what's happening at your club today.</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-outline">📤 Export Report</button>
+            <button class="btn btn-primary">+ Add Match</button>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid-4 mb-24">
+        <div class="stat-card green">
+            <div class="stat-icon green">👥</div>
+            <div class="stat-info">
+                <div class="stat-value">{{ stats.totalPlayers }}</div>
+                <div class="stat-label">Total Players</div>
+                <div class="stat-change up">↑ 2 this month</div>
+            </div>
+        </div>
+        <div class="stat-card purple">
+            <div class="stat-icon purple">🏸</div>
+            <div class="stat-info">
+                <div class="stat-value">{{ stats.totalMatches }}</div>
+                <div class="stat-label">Total Matches</div>
+                <div class="stat-change up">{{ stats.liveMatches }} live now</div>
+            </div>
+        </div>
+        <div class="stat-card orange">
+            <div class="stat-icon orange">📅</div>
+            <div class="stat-info">
+                <div class="stat-value">{{ stats.upcomingSessions }}</div>
+                <div class="stat-label">Upcoming Sessions</div>
+                <div class="stat-change up">↑ Today 2</div>
+            </div>
+        </div>
+        <div class="stat-card blue">
+            <div class="stat-icon blue">💰</div>
+            <div class="stat-info">
+                <div class="stat-value">₹{{ stats.totalRevenue / 1000 | number:'1.1-1' }}K</div>
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-change down">{{ stats.pendingPayments }} pending</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+        <!-- Recent Matches -->
+        <div class="card">
+            <div class="card-header">
+                <h3>🎯 Recent Matches</h3>
+                <button class="btn btn-sm btn-outline" (click)="goTo('matches')">View All</button>
+            </div>
+            <table class="data-table" *ngIf="recentMatches.length > 0">
+                <thead>
+                    <tr>
+                        <th>Players</th>
+                        <th>Score</th>
+                        <th>Court</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let m of recentMatches">
+                        <td>
+                            <div class="match-players">
+                                <span class="p1">{{ m.player1 }}</span>
+                                <span class="vs">VS</span>
+                                <span class="p2">{{ m.player2 }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="score" *ngIf="m.status !== 'Scheduled'">{{ m.score1 }} - {{ m.score2 }}</span>
+                            <span class="score" *ngIf="m.status === 'Scheduled'">TBD</span>
+                        </td>
+                        <td><span class="court-tag">{{ m.court }}</span></td>
+                        <td>
+                            <span class="badge" [ngClass]="getMatchStatusClass(m.status)">
+                                {{ m.status === 'Live' ? '🔴 ' + m.status : m.status }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="empty-state" style="padding: 30px 10px; margin: 0" *ngIf="recentMatches.length === 0">
+                <div class="empty-icon" style="font-size: 32px">🎯</div>
+                <h3 style="font-size: 16px">No recent matches</h3>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <!-- Top Players -->
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-header">
+                    <h3>🏆 Top Players</h3>
+                    <button class="btn btn-sm btn-outline" (click)="goTo('leaderboard')">Full Board</button>
+                </div>
+                <div class="top-players" *ngIf="topPlayers.length > 0">
+                    <div class="top-player" *ngFor="let p of topPlayers; let i = index">
+                        <span class="rank" [ngClass]="getRankClass(i + 1)">{{ getRankEmoji(i + 1) }}</span>
+                        <div class="avatar-sm" [style.background]="getAvatarColor(i)">
+                            <img *ngIf="p.image" [src]="p.image" alt="Avatar">
+                            <span *ngIf="!p.image">{{ p.avatar }}</span>
+                        </div>
+                        <div class="player-info">
+                            <p class="player-name">{{ p.name }}</p>
+                            <p class="player-pts">{{ p.points }} pts · {{ p.wins }}W {{ p.losses }}L</p>
+                        </div>
+                        <div class="win-rate">
+                            <span>{{ p.winRate }}%</span>
+                            <div class="progress-bar">
+                                <div class="progress" [style.width.%]="p.winRate"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="empty-state" style="padding: 30px 10px; margin: 0" *ngIf="topPlayers.length === 0">
+                    <div class="empty-icon" style="font-size: 32px">🏆</div>
+                    <h3 style="font-size: 16px">No top players</h3>
+                </div>
+            </div>
+
+            <!-- Today's Sessions -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>📅 Today's Sessions</h3>
+                    <button class="btn btn-sm btn-outline" (click)="goTo('sessions')">View All</button>
+                </div>
+                <div class="session-list" *ngIf="todaySessions.length > 0">
+                    <div class="session-item" *ngFor="let s of todaySessions">
+                        <div class="session-time">{{ s.time }}</div>
+                        <div class="session-details">
+                            <p class="session-title">{{ s.title }}</p>
+                            <p class="session-meta">{{ s.court }} · {{ s.coach }}</p>
+                            <div class="session-capacity">
+                                <div class="capacity-bar">
+                                    <div class="capacity-fill" [style.width.%]="(s.players / s.maxPlayers) * 100"></div>
+                                </div>
+                                <span>{{ s.players }}/{{ s.maxPlayers }}</span>
+                            </div>
+                        </div>
+                        <span class="badge" [ngClass]="getSessionStatusClass(s.status)">{{ s.status }}</span>
+                    </div>
+                </div>
+                <div class="empty-state" style="padding: 30px 10px; margin: 0" *ngIf="todaySessions.length === 0">
+                    <div class="empty-icon" style="font-size: 32px">📅</div>
+                    <h3 style="font-size: 16px">No sessions today</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity + Payment Stats -->
+    <div class="grid-2 mt-20">
+        <div class="card">
+            <div class="card-header">
+                <h3>📈 Match Activity (This Week)</h3>
+            </div>
+            <div class="activity-bars">
+                <div class="activity-day" *ngFor="let day of weekActivity">
+                    <div class="bar-container">
+                        <div class="bar" [style.height.%]="day.pct" [style.background]="'var(--gradient-primary)'">
+                        </div>
+                    </div>
+                    <span class="day-label">{{ day.day }}</span>
+                    <span class="day-count">{{ day.count }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3>💳 Payment Overview</h3>
+            </div>
+            <div class="payment-stats">
+                <div class="payment-stat-item" *ngFor="let ps of paymentStats">
+                    <div class="ps-left">
+                        <span class="ps-dot" [style.background]="ps.color"></span>
+                        <span class="ps-label">{{ ps.label }}</span>
+                    </div>
+                    <div class="ps-right">
+                        <span class="ps-value">{{ ps.count }}</span>
+                        <span class="ps-amount">₹{{ ps.amount | number }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="glow-divider"></div>
+            <div class="quick-actions">
+                <button class="btn btn-primary btn-sm" (click)="goTo('payments')">View Payments</button>
+                <button class="btn btn-outline btn-sm">📧 Send Reminders</button>
+            </div>
+        </div>
+    </div>
+</div>

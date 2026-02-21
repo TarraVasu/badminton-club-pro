@@ -1,0 +1,182 @@
+<div class="sessions fade-in">
+    <div class="page-header">
+        <div>
+            <h1>📅 Sessions</h1>
+            <p>Manage training sessions, practices, and tournaments</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-outline">📋 View Calendar</button>
+            <button class="btn btn-primary" (click)="openModal()">+ New Session</button>
+        </div>
+    </div>
+
+    <!-- Sessions Cards -->
+    <div class="sessions-grid" *ngIf="sessions.length > 0">
+        <div class="session-card" *ngFor="let s of sessions" [class.ongoing]="s.status === 'Ongoing'"
+            [class.full]="s.status === 'Full'">
+            <div class="session-card-header">
+                <div class="session-type-icon">{{ getTypeIcon(s.type) }}</div>
+                <div class="session-info">
+                    <h3>{{ s.title }}</h3>
+                    <p class="session-type">{{ s.type }}</p>
+                </div>
+                <div class="session-header-actions">
+                    <button class="action-btn-sm" (click)="openEditModal(s)" title="Edit">✏️</button>
+                    <button class="action-btn-sm danger" (click)="deleteSession(s.id)" title="Delete">🗑️</button>
+                    <span class="badge" [ngClass]="getStatusClass(s.status)">{{ s.status }}</span>
+                </div>
+            </div>
+
+            <div class="session-details-grid">
+                <div class="detail-item"><span class="detail-icon">📅</span>
+                    <div>
+                        <p class="detail-label">Date</p>
+                        <p class="detail-value">{{ s.date | date:'EEE, dd MMM' }}</p>
+                    </div>
+                </div>
+                <div class="detail-item"><span class="detail-icon">⏰</span>
+                    <div>
+                        <p class="detail-label">Time</p>
+                        <p class="detail-value">{{ s.time }}</p>
+                    </div>
+                </div>
+                <div class="detail-item"><span class="detail-icon">🏟️</span>
+                    <div>
+                        <p class="detail-label">Court</p>
+                        <p class="detail-value">{{ s.court }}</p>
+                    </div>
+                </div>
+                <div class="detail-item"><span class="detail-icon">👨‍🏫</span>
+                    <div>
+                        <p class="detail-label">Coach</p>
+                        <p class="detail-value">{{ s.coach }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="capacity-section">
+                <div class="capacity-header">
+                    <span>👥 Players</span>
+                    <span class="capacity-count" [class.full-text]="s.players === s.maxPlayers">{{ s.players }}/{{
+                        s.maxPlayers }}</span>
+                </div>
+                <div class="capacity-bar-full">
+                    <div class="capacity-fill" [style.width.%]="(s.players / s.maxPlayers) * 100"
+                        [class.full-fill]="s.players === s.maxPlayers"></div>
+                </div>
+                <div class="capacity-spots" *ngIf="s.status !== 'Full' && s.status !== 'Completed'">
+                    {{ s.maxPlayers - s.players }} spot{{ s.maxPlayers - s.players !== 1 ? 's' : '' }} remaining
+                </div>
+            </div>
+
+            <div class="session-footer">
+                <div class="session-fee">
+                    <span class="fee-label">Session Fee</span>
+                    <span class="fee-value">₹{{ s.fee }}</span>
+                </div>
+                <div class="session-actions">
+                    <button class="btn btn-sm btn-outline" (click)="openEditModal(s)">Edit</button>
+                    <button class="btn btn-sm btn-primary" *ngIf="s.status === 'Upcoming'"
+                        [disabled]="s.players >= s.maxPlayers">
+                        {{ s.players >= s.maxPlayers ? 'Full' : '+ Join' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="empty-state" *ngIf="sessions.length === 0">
+        <div class="empty-icon">📅</div>
+        <h3>No sessions found</h3>
+        <p>Create a new training, practice, or tournament session to see it here.</p>
+    </div>
+</div>
+
+<!-- ═══ ADD / EDIT SESSION MODAL ═══ -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal modal-lg" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <div class="modal-title-wrap">
+                <span class="modal-icon">{{ editMode ? '✏️' : '📅' }}</span>
+                <div>
+                    <h3>{{ editMode ? 'Edit Session' : 'Create New Session' }}</h3>
+                    <p class="modal-subtitle">{{ editMode ? 'Update session details' : 'Schedule a training or practice
+                        session' }}</p>
+                </div>
+            </div>
+            <button class="close-btn" (click)="closeModal()">✕</button>
+        </div>
+
+        <div class="form-section-title">Session Info</div>
+        <div class="form-group">
+            <label>Session Title *</label>
+            <input type="text" [(ngModel)]="newSession.title" placeholder="e.g. Morning Drills, Beginner Basics...">
+        </div>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Session Type *</label>
+                <select [(ngModel)]="newSession.type">
+                    <option value="">Select Type</option>
+                    <option value="Training">🎯 Training</option>
+                    <option value="Practice">🏸 Practice</option>
+                    <option value="Tournament">🏆 Tournament</option>
+                    <option value="Friendly">🤝 Friendly</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select [(ngModel)]="newSession.status">
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Ongoing">Ongoing</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-section-title">Schedule</div>
+        <div class="grid-3">
+            <div class="form-group">
+                <label>Date *</label>
+                <input type="date" [(ngModel)]="newSession.date">
+            </div>
+            <div class="form-group">
+                <label>Start Time *</label>
+                <input type="time" [(ngModel)]="newSession.time">
+            </div>
+            <div class="form-group">
+                <label>Court *</label>
+                <select [(ngModel)]="newSession.court">
+                    <option value="">Select Court</option>
+                    <option value="Court A">Court A</option>
+                    <option value="Court B">Court B</option>
+                    <option value="Court C">Court C</option>
+                    <option value="All Courts">All Courts</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-section-title">Capacity & Fee</div>
+        <div class="grid-3">
+            <div class="form-group">
+                <label>Coach / Trainer</label>
+                <input type="text" [(ngModel)]="newSession.coach" placeholder="e.g. Coach Rajan">
+            </div>
+            <div class="form-group">
+                <label>Max Players</label>
+                <input type="number" [(ngModel)]="newSession.maxPlayers" min="1" max="50">
+            </div>
+            <div class="form-group">
+                <label>Session Fee (₹)</label>
+                <input type="number" [(ngModel)]="newSession.fee" min="0" placeholder="0">
+            </div>
+        </div>
+
+        <div class="form-error" *ngIf="formError">⚠️ {{ formError }}</div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" (click)="closeModal()">Cancel</button>
+            <button class="btn btn-primary" (click)="saveSession()">
+                {{ editMode ? '💾 Save Changes' : '✅ Create Session' }}
+            </button>
+        </div>
+    </div>
+</div>
