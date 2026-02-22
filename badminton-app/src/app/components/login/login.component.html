@@ -1,5 +1,24 @@
 <div class="login-container">
-    <div class="login-card fade-in">
+    <div class="lamp-section">
+        <div class="lamp" [class.on]="isLampOn">
+            <div class="lamp-shade">
+                <div class="birdie-logo" *ngIf="isLampOn">🐾</div>
+                <div class="eyes" [class.open]="isLampOn">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                </div>
+                <div class="mouth" *ngIf="isLampOn"></div>
+            </div>
+            <div class="lamp-base"></div>
+            <div class="lamp-thread" (click)="toggleLamp()">
+                <div class="thread-line"></div>
+                <div class="thread-knob"></div>
+            </div>
+            <div class="light-beam" *ngIf="isLampOn"></div>
+        </div>
+    </div>
+
+    <div class="login-card fade-in" *ngIf="isLampOn">
         <div class="login-header">
             <div class="logo">🐾</div>
             <h1>Birdie Beasts</h1>

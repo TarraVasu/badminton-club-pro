@@ -11,8 +11,13 @@ export class LoginComponent {
   email = '';
   password = '';
   showPassword = false;
+  isLampOn = false;
 
   constructor(private auth: AuthService, public loader: LoaderService) { }
+
+  toggleLamp() {
+    this.isLampOn = !this.isLampOn;
+  }
 
   onLogin() {
     this.auth.login(this.email, this.password);
