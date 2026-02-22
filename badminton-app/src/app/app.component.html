@@ -37,7 +37,7 @@
 
         <div class="user-profile">
           <div class="avatar" (click)="toggleUserDropdown($event)">
-            {{ auth.isLoggedIn ? (auth.user.login_id | slice:0:1).toUpperCase() : '' }}
+            {{ auth.isLoggedIn ? auth.getUserInitial() : '' }}
           </div>
           <div class="user-dropdown" [class.show]="userDropdownOpen" (click)="$event.stopPropagation()">
             <div class="dropdown-header">
