@@ -53,7 +53,7 @@ export class AuthService {
                     sessionStorage.setItem('token', res.token);
                     sessionStorage.setItem('userData', JSON.stringify({
                         full_name: res.full_name,
-                        login_id: res.email || res.username,
+                        login_id: res.email || res.username || username,
                         role: 'Administrator'
                     }));
                     this.toast.success('🎉 Welcome back!');
