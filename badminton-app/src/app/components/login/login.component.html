@@ -6,13 +6,13 @@
             <p>Welcome back! Please login to your account.</p>
         </div>
 
-        <form (submit)="onLogin(); $event.preventDefault()" class="login-form">
+        <form (submit)="onLogin(); $event.preventDefault()" class="login-form" autocomplete="off">
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <div class="input-wrapper">
                     <span class="input-icon">📧</span>
                     <input type="email" id="email" name="email" [(ngModel)]="email" placeholder="Enter your email"
-                        required>
+                        required autocomplete="off">
                 </div>
             </div>
 
@@ -21,7 +21,7 @@
                 <div class="input-wrapper">
                     <span class="input-icon">🔒</span>
                     <input [type]="showPassword ? 'text' : 'password'" id="password" name="password"
-                        [(ngModel)]="password" placeholder="Enter your password" required>
+                        [(ngModel)]="password" placeholder="Enter your password" required autocomplete="new-password">
                     <button type="button" class="toggle-password" (click)="showPassword = !showPassword">
                         {{ showPassword ? '👁️' : '👁️‍🗨️' }}
                     </button>

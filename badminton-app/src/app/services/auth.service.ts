@@ -48,6 +48,7 @@ export class AuthService {
         this._isLoggedIn = false;
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('token');
-        this.router.navigate(['/login']);
+        // Use replaceUrl to prevent the back button from returning to protected pages
+        this.router.navigateByUrl('/login', { replaceUrl: true });
     }
 }
