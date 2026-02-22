@@ -4,7 +4,7 @@
             <h1>🏸 Dashboard</h1>
             <p>Welcome back! Here's what's happening at your club today.</p>
         </div>
-        <div class="header-actions">
+        <div class="header-actions" *ngIf="userRole === 'Admin'">
             <button class="btn btn-outline">📤 Export Report</button>
             <button class="btn btn-primary animate-scale-in">+ Add Match</button>
         </div>
@@ -191,7 +191,10 @@
             <div class="glow-divider"></div>
             <div class="quick-actions">
                 <button class="btn btn-primary btn-sm" (click)="goTo('payments')">View Payments</button>
-                <button class="btn btn-outline btn-sm">📧 Send Reminders</button>
+                <div class="header-actions" *ngIf="userRole === 'Admin'">
+                    <button class="btn btn-primary animate-scale-in" (click)="goTo('matches')">+ Add Match</button>
+                    <button class="btn btn-outline btn-sm">📧 Send Reminders</button>
+                </div>
             </div>
         </div>
     </div>

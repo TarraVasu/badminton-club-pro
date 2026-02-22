@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, Input, OnChanges } from '@angular/core
 import { Router } from '@angular/router';
 
 import { DataService } from '../../services/data.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,15 +18,20 @@ export class SidebarComponent implements OnChanges {
   @Output() closeMenu = new EventEmitter<void>();
 
   navItems = [
-    { icon: '📊', label: 'Dashboard', route: 'dashboard', badge: null },
-    { icon: '👥', label: 'Players', route: 'players', badge: '0' },
-    { icon: '🏸', label: 'Matches', route: 'matches', badge: '0' },
-    { icon: '📅', label: 'Sessions', route: 'sessions', badge: '0' },
-    { icon: '💳', label: 'Payments', route: 'payments', badge: '0' },
-    { icon: '🏆', label: 'Leaderboard', route: 'leaderboard', badge: null },
+    { icon: '📊', label: 'Dashboard', route: 'dashboard', badge: null, adminOnly: false },
+    { icon: '👥', label: 'Players', route: 'players', badge: '0', adminOnly: false },
+    { icon: '🏸', label: 'Matches', route: 'matches', badge: '0', adminOnly: false },
+    { icon: '📅', label: 'Sessions', route: 'sessions', badge: '0', adminOnly: false },
+    { icon: '💳', label: 'Payments', route: 'payments', badge: '0', adminOnly: true },
+    { icon: '🏆', label: 'Leaderboard', route: 'leaderboard', badge: null, adminOnly: false },
   ];
 
-  constructor(private router: Router, private dataService: DataService) {
+  constructor(private router: Router, private dataService: DataService, private authService: AuthService) {
+    // Filter nav items by role
+    if (this.authService.user.role === 'Player') {
+      this.navItems = this.navItems.filter(item => !item.adminOnly);
+    }
+
     this.router.events.subscribe(() => {
       const url = this.router.url.replace('/', '');
       this.activeRoute = url || 'dashboard';

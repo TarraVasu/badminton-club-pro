@@ -62,5 +62,6 @@ class CustomObtainAuthToken(ObtainAuthToken):
             'user_id': user.pk,
             'email': user.email,
             'username': user.username,
-            'full_name': f"{user.first_name} {user.last_name}".strip() or user.username
+            'full_name': f"{user.first_name} {user.last_name}".strip() or user.username,
+            'is_staff': user.is_staff
         })

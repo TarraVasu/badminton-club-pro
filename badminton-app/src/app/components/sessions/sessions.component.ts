@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService, Session } from '../../services/data.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sessions',
@@ -15,7 +16,9 @@ export class SessionsComponent implements OnInit {
 
   newSession: any = this.defaultSession();
 
-  constructor(private data: DataService) { }
+  constructor(private data: DataService, public auth: AuthService) { }
+
+  get userRole() { return this.auth.user.role; }
   ngOnInit() {
     this.data.getSessions().subscribe(sessions => {
       this.sessions = sessions;

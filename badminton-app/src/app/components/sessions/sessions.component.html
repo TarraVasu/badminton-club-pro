@@ -4,7 +4,7 @@
             <h1>📅 Sessions</h1>
             <p>Manage training sessions, practices, and tournaments</p>
         </div>
-        <div class="header-actions">
+        <div class="header-actions" *ngIf="userRole === 'Admin'">
             <button class="btn btn-outline">📋 View Calendar</button>
             <button class="btn btn-primary animate-scale-in" (click)="openModal()">+ New Session</button>
         </div>
@@ -20,9 +20,11 @@
                     <h3>{{ s.title }}</h3>
                     <p class="session-type">{{ s.type }}</p>
                 </div>
-                <div class="session-header-actions">
-                    <button class="action-btn-sm" (click)="openEditModal(s)" title="Edit">✏️</button>
-                    <button class="action-btn-sm danger" (click)="deleteSession(s.id)" title="Delete">🗑️</button>
+                <div class="session-header-actions-wrapper">
+                    <div class="session-header-actions" *ngIf="userRole === 'Admin'">
+                        <button class="action-btn-sm" (click)="openEditModal(s)" title="Edit">✏️</button>
+                        <button class="action-btn-sm danger" (click)="deleteSession(s.id)" title="Delete">🗑️</button>
+                    </div>
                     <span class="badge" [ngClass]="getStatusClass(s.status)">{{ s.status }}</span>
                 </div>
             </div>
@@ -75,7 +77,8 @@
                     <span class="fee-value">₹{{ s.fee }}</span>
                 </div>
                 <div class="session-actions">
-                    <button class="btn btn-sm btn-outline" (click)="openEditModal(s)">Edit</button>
+                    <button class="btn btn-sm btn-outline" (click)="openEditModal(s)"
+                        *ngIf="userRole === 'Admin'">Edit</button>
                     <button class="btn btn-sm btn-primary" *ngIf="s.status === 'Upcoming'"
                         [disabled]="s.players >= s.maxPlayers">
                         {{ s.players >= s.maxPlayers ? 'Full' : '+ Join' }}
@@ -87,7 +90,8 @@
     <div class="empty-state" *ngIf="sessions.length === 0">
         <div class="empty-icon">📅</div>
         <h3>No sessions found</h3>
-        <p>Create a new training, practice, or tournament session to see it here.</p>
+        <p *ngIf="userRole === 'Admin'">Create a new training, practice, or tournament session to see it here.</p>
+        <p *ngIf="userRole === 'Player'">Check back later for upcoming club sessions and tournaments.</p>
     </div>
 </div>
 

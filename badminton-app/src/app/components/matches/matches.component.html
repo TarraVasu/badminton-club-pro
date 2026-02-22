@@ -4,7 +4,7 @@
             <h1>🏸 Matches</h1>
             <p>Track all {{ matches.length }} matches — live, scheduled and completed</p>
         </div>
-        <div class="header-actions">
+        <div class="header-actions" *ngIf="userRole === 'Admin'">
             <button class="btn btn-outline">📊 Stats</button>
             <button class="btn btn-primary animate-scale-in" (click)="openScheduleModal()">+ Schedule Match</button>
         </div>
@@ -43,7 +43,7 @@
                     <th>Type</th>
                     <th>Duration</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th *ngIf="userRole === 'Admin'">Actions</th>
                 </tr>
             </thead>
             <tbody class="animate-stagger">
@@ -84,7 +84,7 @@
                             {{ m.status === 'Live' ? '🔴 ' : '' }}{{ m.status }}
                         </span>
                     </td>
-                    <td>
+                    <td *ngIf="userRole === 'Admin'">
                         <div class="row-actions">
                             <button class="action-btn" title="Enter Score" *ngIf="m.status !== 'Completed'"
                                 (click)="openScoreModal(m)">🎯</button>

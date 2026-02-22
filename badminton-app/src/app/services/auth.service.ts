@@ -53,7 +53,7 @@ export class AuthService {
         sessionStorage.setItem('userData', JSON.stringify({
             full_name: res.full_name,
             login_id: res.email || res.username || username,
-            role: 'Administrator'
+            role: res.is_staff ? 'Admin' : 'Player'
         }));
         this.toast.success('🎉 Welcome back!');
         this.router.navigate(['/dashboard']);

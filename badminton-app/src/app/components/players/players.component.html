@@ -4,7 +4,7 @@
             <h1>👥 Players</h1>
             <p>Manage all {{ players.length }} registered club members</p>
         </div>
-        <div class="header-actions">
+        <div class="header-actions" *ngIf="userRole === 'Admin'">
             <button class="btn btn-outline">📤 Export</button>
             <button class="btn btn-primary animate-scale-in" (click)="openModal()">+ Add Player</button>
         </div>
@@ -41,7 +41,7 @@
                     <span class="badge" [ngClass]="p.status === 'Active' ? 'badge-success' : 'badge-warning'">{{
                         p.status }}</span>
                 </div>
-                <div class="card-actions">
+                <div class="card-actions" *ngIf="userRole === 'Admin'">
                     <button class="action-btn" title="Edit" (click)="openEditModal(p)">✏️</button>
                     <button class="action-btn danger" title="Delete" (click)="deletePlayer(p.id)">🗑️</button>
                 </div>

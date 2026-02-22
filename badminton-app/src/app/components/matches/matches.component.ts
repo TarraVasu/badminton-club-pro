@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService, Match } from '../../services/data.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-matches',
@@ -23,7 +24,9 @@ export class MatchesComponent implements OnInit {
   get activeTab() { return this._activeTab; }
   set activeTab(val: string) { this._activeTab = val; this.filterMatches(); }
 
-  constructor(private data: DataService) { }
+  constructor(private data: DataService, public auth: AuthService) { }
+
+  get userRole() { return this.auth.user.role; }
 
   ngOnInit() {
     this.data.getMatches().subscribe(matches => {
