@@ -11,7 +11,7 @@ import { LoaderService } from '../../services/loader.service';
           <div class="shuttlecock">☁️</div>
           <div class="racket racket-right">🏸</div>
         </div>
-        <p class="loader-text">Processing your Smash... 🚀</p>
+        <p class="loader-text">Birdie Beasts are Smashing... 🐾</p>
       </div>
     </div>
   `,
