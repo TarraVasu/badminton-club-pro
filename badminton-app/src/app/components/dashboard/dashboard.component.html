@@ -1,8 +1,12 @@
 <div class="dashboard px-4">
     <div class="page-header animate-fade-in">
-        <div>
-            <h1>🏸 Dashboard</h1>
+        <div *ngIf="userRole === 'Admin'">
+            <h1>🏸 Admin Dashboard</h1>
             <p>Welcome back! Here's what's happening at your club today.</p>
+        </div>
+        <div *ngIf="userRole === 'Player'">
+            <h1>🏸 Player Lounge</h1>
+            <p>Welcome to the community! Check out today's rankings and matches.</p>
         </div>
         <div class="header-actions" *ngIf="userRole === 'Admin'">
             <button class="btn btn-outline">📤 Export Report</button>
@@ -17,6 +21,14 @@
             <div class="stat-info">
                 <div class="stat-value">{{ stats.totalPlayers }}</div>
                 <div class="stat-label">Total Players</div>
+                <div class="stat-change up">↑ 2 this month</div>
+            </div>
+        </div>
+        <div class="stat-card green card-3d" *ngIf="userRole === 'Player'">
+            <div class="stat-icon green">👥</div>
+            <div class="stat-info">
+                <div class="stat-value">{{ stats.totalPlayers }}</div>
+                <div class="stat-label">Club Members</div>
                 <div class="stat-change up">↑ 2 this month</div>
             </div>
         </div>
@@ -36,12 +48,21 @@
                 <div class="stat-change up">↑ Today 2</div>
             </div>
         </div>
-        <div class="stat-card blue card-3d">
+        <div class="stat-card blue card-3d" *ngIf="userRole === 'Admin'">
             <div class="stat-icon blue">💰</div>
             <div class="stat-info">
                 <div class="stat-value">₹{{ stats.totalRevenue / 1000 | number:'1.1-1' }}K</div>
                 <div class="stat-label">Total Revenue</div>
                 <div class="stat-change down">{{ stats.pendingPayments }} pending</div>
+            </div>
+        </div>
+        <!-- Player Specific Card -->
+        <div class="stat-card gold card-3d" *ngIf="userRole === 'Player'">
+            <div class="stat-icon gold">🏆</div>
+            <div class="stat-info">
+                <div class="stat-value">TOP 10</div>
+                <div class="stat-label">Your Standing</div>
+                <div class="stat-change up">↑ Improve rank</div>
             </div>
         </div>
     </div>
