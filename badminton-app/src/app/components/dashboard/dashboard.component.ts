@@ -32,7 +32,9 @@ export class DashboardComponent implements OnInit {
 
   avatarColors = ['var(--gradient-primary)', 'linear-gradient(135deg,#6c63ff,#ff6b35)', 'linear-gradient(135deg,#3b82f6,#00d4aa)', 'linear-gradient(135deg,#f59e0b,#ef4444)'];
 
-  constructor(private data: DataService, private router: Router) { }
+  constructor(private data: DataService, private router: Router, public auth: AuthService) { }
+
+  get userRole() { return this.auth.user.role; }
 
   ngOnInit() {
     this.data.getPlayers().subscribe(players => {

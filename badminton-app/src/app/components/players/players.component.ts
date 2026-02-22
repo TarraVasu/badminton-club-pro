@@ -39,7 +39,9 @@ export class PlayersComponent implements OnInit {
   editingId?: number | null = null;
   selectedFile: File | null = null;
 
-  constructor(private data: DataService) { }
+  constructor(private data: DataService, public auth: AuthService) { }
+
+  get userRole() { return this.auth.user.role; }
 
   ngOnInit() {
     this.data.getPlayers().subscribe(players => {
