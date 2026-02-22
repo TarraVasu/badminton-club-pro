@@ -1,18 +1,18 @@
-<div class="leaderboard fade-in">
-    <div class="page-header">
+<div class="leaderboard px-4">
+    <div class="page-header animate-fade-in">
         <div>
             <h1>🏆 Leaderboard</h1>
             <p>Rankings based on points, wins, and performance</p>
         </div>
         <div class="header-actions">
             <button class="btn btn-outline">📊 Stats</button>
-            <button class="btn btn-primary">🔄 Refresh</button>
+            <button class="btn btn-primary animate-scale-in">🔄 Refresh</button>
         </div>
     </div>
 
     <!-- Podium (Top 3) -->
     <div class="podium" *ngIf="leaderboard.length > 0">
-        <div class="podium-item second" *ngIf="leaderboard[1]">
+        <div class="podium-item second animate-scale-in" style="animation-delay: 0.1s" *ngIf="leaderboard[1]">
             <div class="podium-medal">🥈</div>
             <div class="podium-avatar" style="background: linear-gradient(135deg,#6c63ff,#ff6b35);">
                 <img *ngIf="leaderboard[1].image" [src]="leaderboard[1].image" alt="P2" class="avatar-img">
@@ -22,7 +22,7 @@
             <p class="podium-pts">{{ leaderboard[1].points }} pts</p>
             <div class="podium-block p2">2</div>
         </div>
-        <div class="podium-item first" *ngIf="leaderboard[0]">
+        <div class="podium-item first animate-scale-in" *ngIf="leaderboard[0]">
             <div class="champion-crown">👑</div>
             <div class="podium-medal">🥇</div>
             <div class="podium-avatar champion-ring" style="background: var(--gradient-primary);">
@@ -33,7 +33,7 @@
             <p class="podium-pts">{{ leaderboard[0].points }} pts</p>
             <div class="podium-block p1">1</div>
         </div>
-        <div class="podium-item third" *ngIf="leaderboard[2]">
+        <div class="podium-item third animate-scale-in" style="animation-delay: 0.2s" *ngIf="leaderboard[2]">
             <div class="podium-medal">🥉</div>
             <div class="podium-avatar" style="background: linear-gradient(135deg,#3b82f6,#00d4aa);">
                 <img *ngIf="leaderboard[2].image" [src]="leaderboard[2].image" alt="P3" class="avatar-img">
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Full Rankings Table -->
-    <div class="card">
+    <div class="card animate-fade-in" style="animation-delay: 0.3s">
         <div class="card-header">
             <h3>🏅 Full Rankings</h3>
         </div>
@@ -63,7 +63,7 @@
                     <th>Trend</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="animate-stagger">
                 <tr *ngFor="let p of leaderboard" [class.top-three]="p.rank <= 3">
                     <td>
                         <span class="rank-badge" [ngClass]="getRankClass(p.rank)">

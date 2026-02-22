@@ -1,17 +1,17 @@
-<div class="payments fade-in">
-    <div class="page-header">
+<div class="payments px-4">
+    <div class="page-header animate-fade-in">
         <div>
             <h1>💳 Payments</h1>
             <p>Track dues, collections, and financial overview</p>
         </div>
         <div class="header-actions">
             <button class="btn btn-outline">📤 Export</button>
-            <button class="btn btn-primary" (click)="openModal()">+ Record Payment</button>
+            <button class="btn btn-primary animate-scale-in" (click)="openModal()">+ Record Payment</button>
         </div>
     </div>
 
     <!-- Finance Summary -->
-    <div class="grid-4 mb-24">
+    <div class="grid-4 mb-24 animate-stagger">
         <div class="stat-card green">
             <div class="stat-icon green">💰</div>
             <div class="stat-info">
@@ -72,7 +72,7 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="animate-stagger">
                 <tr *ngFor="let p of filteredPayments">
                     <td><span class="ref-id">{{ p.reference !== '-' ? p.reference : '—' }}</span></td>
                     <td>

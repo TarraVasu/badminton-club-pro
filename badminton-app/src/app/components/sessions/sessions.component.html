@@ -1,17 +1,17 @@
-<div class="sessions fade-in">
-    <div class="page-header">
+<div class="sessions px-4">
+    <div class="page-header animate-fade-in">
         <div>
             <h1>📅 Sessions</h1>
             <p>Manage training sessions, practices, and tournaments</p>
         </div>
         <div class="header-actions">
             <button class="btn btn-outline">📋 View Calendar</button>
-            <button class="btn btn-primary" (click)="openModal()">+ New Session</button>
+            <button class="btn btn-primary animate-scale-in" (click)="openModal()">+ New Session</button>
         </div>
     </div>
 
     <!-- Sessions Cards -->
-    <div class="sessions-grid" *ngIf="sessions.length > 0">
+    <div class="sessions-grid animate-stagger" *ngIf="sessions.length > 0">
         <div class="session-card" *ngFor="let s of sessions" [class.ongoing]="s.status === 'Ongoing'"
             [class.full]="s.status === 'Full'">
             <div class="session-card-header">

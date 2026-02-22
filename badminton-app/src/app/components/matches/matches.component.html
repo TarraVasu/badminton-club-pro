@@ -1,17 +1,17 @@
-<div class="matches fade-in">
-    <div class="page-header">
+<div class="matches px-4">
+    <div class="page-header animate-fade-in">
         <div>
             <h1>🏸 Matches</h1>
             <p>Track all {{ matches.length }} matches — live, scheduled and completed</p>
         </div>
         <div class="header-actions">
             <button class="btn btn-outline">📊 Stats</button>
-            <button class="btn btn-primary" (click)="openScheduleModal()">+ Schedule Match</button>
+            <button class="btn btn-primary animate-scale-in" (click)="openScheduleModal()">+ Schedule Match</button>
         </div>
     </div>
 
     <!-- Live Match Banner -->
-    <div class="live-banner" *ngIf="liveMatch">
+    <div class="live-banner animate-fade-in" *ngIf="liveMatch">
         <div class="live-pulse"></div>
         <div class="live-info">
             <span class="live-tag">🔴 LIVE NOW</span>
@@ -22,7 +22,7 @@
     </div>
 
     <!-- Tabs -->
-    <div class="tabs">
+    <div class="tabs animate-fade-in" style="animation-delay: 0.1s">
         <div class="tab" [class.active]="activeTab === 'all'" (click)="activeTab = 'all'">All Matches</div>
         <div class="tab" [class.active]="activeTab === 'live'" (click)="activeTab = 'live'">🔴 Live</div>
         <div class="tab" [class.active]="activeTab === 'scheduled'" (click)="activeTab = 'scheduled'">Scheduled</div>
@@ -30,7 +30,7 @@
     </div>
 
     <!-- Matches Table -->
-    <div class="card">
+    <div class="card animate-fade-in" style="animation-delay: 0.2s">
         <table class="data-table" *ngIf="filteredMatches.length > 0">
             <thead>
                 <tr>
@@ -46,7 +46,7 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="animate-stagger">
                 <tr *ngFor="let m of filteredMatches" [class.live-row]="m.status === 'Live'">
                     <td><span class="match-id">#{{ m.id }}</span></td>
                     <td>

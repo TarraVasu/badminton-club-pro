@@ -1,17 +1,17 @@
-<div class="dashboard fade-in">
-    <div class="page-header">
+<div class="dashboard px-4">
+    <div class="page-header animate-fade-in">
         <div>
             <h1>🏸 Dashboard</h1>
             <p>Welcome back! Here's what's happening at your club today.</p>
         </div>
         <div class="header-actions">
             <button class="btn btn-outline">📤 Export Report</button>
-            <button class="btn btn-primary">+ Add Match</button>
+            <button class="btn btn-primary animate-scale-in">+ Add Match</button>
         </div>
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid-4 mb-24">
+    <div class="grid-4 mb-24 animate-stagger">
         <div class="stat-card green">
             <div class="stat-icon green">👥</div>
             <div class="stat-info">
@@ -99,7 +99,7 @@
                     <h3>🏆 Top Players</h3>
                     <button class="btn btn-sm btn-outline" (click)="goTo('leaderboard')">Full Board</button>
                 </div>
-                <div class="top-players" *ngIf="topPlayers.length > 0">
+                <div class="top-players animate-stagger" *ngIf="topPlayers.length > 0">
                     <div class="top-player" *ngFor="let p of topPlayers; let i = index">
                         <span class="rank" [ngClass]="getRankClass(i + 1)">{{ getRankEmoji(i + 1) }}</span>
                         <div class="avatar-sm" [style.background]="getAvatarColor(i)">
@@ -130,7 +130,7 @@
                     <h3>📅 Today's Sessions</h3>
                     <button class="btn btn-sm btn-outline" (click)="goTo('sessions')">View All</button>
                 </div>
-                <div class="session-list" *ngIf="todaySessions.length > 0">
+                <div class="session-list animate-stagger" *ngIf="todaySessions.length > 0">
                     <div class="session-item" *ngFor="let s of todaySessions">
                         <div class="session-time">{{ s.time }}</div>
                         <div class="session-details">

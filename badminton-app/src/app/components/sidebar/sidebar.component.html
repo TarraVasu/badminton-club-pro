@@ -14,7 +14,7 @@
     <span class="section-label">Main</span>
   </div>
 
-  <nav class="sidebar-nav">
+  <nav class="sidebar-nav animate-stagger">
     <a *ngFor="let item of navItems" class="nav-item" [class.active]="activeRoute === item.route"
       (click)="navigate(item.route)" [title]="collapsed ? item.label : ''">
       <span class="nav-icon">{{ item.icon }}</span>

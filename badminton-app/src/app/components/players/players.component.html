@@ -1,17 +1,17 @@
-<div class="players fade-in">
-    <div class="page-header">
+<div class="players px-4">
+    <div class="page-header animate-fade-in">
         <div>
             <h1>👥 Players</h1>
             <p>Manage all {{ players.length }} registered club members</p>
         </div>
         <div class="header-actions">
             <button class="btn btn-outline">📤 Export</button>
-            <button class="btn btn-primary" (click)="openModal()">+ Add Player</button>
+            <button class="btn btn-primary animate-scale-in" (click)="openModal()">+ Add Player</button>
         </div>
     </div>
 
     <!-- Filters -->
-    <div class="filters-bar">
+    <div class="filters-bar animate-fade-in" style="animation-delay: 0.1s">
         <div class="search-pill">
             <span>🔍</span>
             <input type="text" placeholder="Search players..." [(ngModel)]="searchQuery" (input)="filterPlayers()">
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Players Grid -->
-    <div class="players-grid" *ngIf="filteredPlayers.length > 0">
+    <div class="players-grid animate-stagger" *ngIf="filteredPlayers.length > 0">
         <div class="player-card" *ngFor="let p of filteredPlayers; let i = index">
             <div class="player-card-header">
                 <div class="player-avatar" [style.background]="getColor(i)">
