@@ -43,28 +43,20 @@ export class AuthService {
     }
 
     login(username: string, pass: string) {
-        this.loader.show();
-        this.http.post<any>(`${this.baseUrl}/api-token-auth/`, { username, password: pass })
-            .pipe(finalize(() => this.loader.hide()))
-            .subscribe({
-                next: (res) => {
-                    this._isLoggedIn = true;
-                    sessionStorage.setItem('isLoggedIn', 'true');
-                    sessionStorage.setItem('token', res.token);
-                    sessionStorage.setItem('userData', JSON.stringify({
-                        full_name: res.full_name,
-                        login_id: res.email || res.username || username,
-                        role: 'Administrator'
-                    }));
-                    this.toast.success('🎉 Welcome back!');
-                    this.router.navigate(['/dashboard']);
-                },
-                error: (err) => {
-                    this.toast.error('Invalid credentials.');
-                    console.error('Login error:', err);
-                }
-            });
-        return false;
+        return this.http.post<any>(`${this.baseUrl}/api-token-auth/`, { username, password: pass });
+    }
+
+    handleLoginSuccess(res: any, username: string) {
+        this._isLoggedIn = true;
+        sessionStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('token', res.token);
+        sessionStorage.setItem('userData', JSON.stringify({
+            full_name: res.full_name,
+            login_id: res.email || res.username || username,
+            role: 'Administrator'
+        }));
+        this.toast.success('🎉 Welcome back!');
+        this.router.navigate(['/dashboard']);
     }
 
     logout() {

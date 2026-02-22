@@ -26,25 +26,32 @@
         </div>
 
         <form (submit)="onLogin(); $event.preventDefault()" class="login-form" autocomplete="off">
+            <div class="error-msg general" *ngIf="errors.general">
+                ⚠️ {{ errors.general }}
+            </div>
+
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <div class="input-wrapper">
+                <div class="input-wrapper" [class.has-error]="errors.email">
                     <span class="input-icon">📧</span>
                     <input type="email" id="email" name="email" [(ngModel)]="email" placeholder="Enter your email"
-                        required autocomplete="off">
+                        (input)="errors.email = undefined" required autocomplete="off">
                 </div>
+                <span class="error-text" *ngIf="errors.email && errors.email !== ' '">{{ errors.email }}</span>
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <div class="input-wrapper">
+                <div class="input-wrapper" [class.has-error]="errors.password">
                     <span class="input-icon">🔒</span>
                     <input [type]="showPassword ? 'text' : 'password'" id="password" name="password"
-                        [(ngModel)]="password" placeholder="Enter your password" required autocomplete="new-password">
+                        [(ngModel)]="password" placeholder="Enter your password" (input)="errors.password = undefined"
+                        required autocomplete="new-password">
                     <button type="button" class="toggle-password" (click)="showPassword = !showPassword">
                         {{ showPassword ? '👁️' : '👁️‍🗨️' }}
                     </button>
                 </div>
+                <span class="error-text" *ngIf="errors.password && errors.password !== ' '">{{ errors.password }}</span>
             </div>
 
             <div class="form-options">
