@@ -23,7 +23,9 @@ export class AuthService {
         private http: HttpClient,
         private loader: LoaderService
     ) {
-        this._isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        const loggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+        const token = sessionStorage.getItem('token');
+        this._isLoggedIn = !!(loggedIn && token);
     }
 
     get isLoggedIn(): boolean {
@@ -31,7 +33,7 @@ export class AuthService {
     }
 
     get user(): UserData {
-        const stored = localStorage.getItem('userData');
+        const stored = sessionStorage.getItem('userData');
         return stored ? JSON.parse(stored) : { login_id: 'Guest', full_name: 'Guest', role: 'User' };
     }
 
@@ -47,9 +49,9 @@ export class AuthService {
             .subscribe({
                 next: (res) => {
                     this._isLoggedIn = true;
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('token', res.token);
-                    localStorage.setItem('userData', JSON.stringify({
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('token', res.token);
+                    sessionStorage.setItem('userData', JSON.stringify({
                         full_name: res.full_name,
                         login_id: res.email || res.username,
                         role: 'Administrator'
@@ -67,9 +69,9 @@ export class AuthService {
 
     logout() {
         this._isLoggedIn = false;
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('token');
-        localStorage.removeItem('userData');
+        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('userData');
         // Use replaceUrl to prevent the back button from returning to protected pages
         this.router.navigateByUrl('/login', { replaceUrl: true });
     }
