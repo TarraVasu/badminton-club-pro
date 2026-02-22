@@ -1,6 +1,8 @@
 import { Component, Output, EventEmitter, Input, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { DataService } from '../../services/data.service';
+
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
@@ -16,18 +18,31 @@ export class SidebarComponent implements OnChanges {
 
   navItems = [
     { icon: '📊', label: 'Dashboard', route: 'dashboard', badge: null },
-    { icon: '👥', label: 'Players', route: 'players', badge: '8' },
-    { icon: '🏸', label: 'Matches', route: 'matches', badge: '2' },
-    { icon: '📅', label: 'Sessions', route: 'sessions', badge: null },
-    { icon: '💳', label: 'Payments', route: 'payments', badge: '3' },
+    { icon: '👥', label: 'Players', route: 'players', badge: '0' },
+    { icon: '🏸', label: 'Matches', route: 'matches', badge: '0' },
+    { icon: '📅', label: 'Sessions', route: 'sessions', badge: '0' },
+    { icon: '💳', label: 'Payments', route: 'payments', badge: '0' },
     { icon: '🏆', label: 'Leaderboard', route: 'leaderboard', badge: null },
   ];
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private dataService: DataService) {
     this.router.events.subscribe(() => {
       const url = this.router.url.replace('/', '');
       this.activeRoute = url || 'dashboard';
     });
+
+    // Sync badges with data service
+    this.dataService.playersCount$.subscribe(count => this.updateBadge('players', count));
+    this.dataService.matchesCount$.subscribe(count => this.updateBadge('matches', count));
+    this.dataService.sessionsCount$.subscribe(count => this.updateBadge('sessions', count));
+    this.dataService.paymentsCount$.subscribe(count => this.updateBadge('payments', count));
+  }
+
+  updateBadge(route: string, count: number) {
+    const item = this.navItems.find(i => i.route === route);
+    if (item) {
+      item.badge = count > 0 ? count.toString() : null;
+    }
   }
 
   ngOnChanges() { }

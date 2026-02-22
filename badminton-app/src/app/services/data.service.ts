@@ -61,16 +61,34 @@ export interface Payment {
   reference: string;
 }
 
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 @Injectable({ providedIn: 'root' })
 export class DataService {
 
   private apiUrl = environment.apiUrl;
 
+  // Global counts for sidebar badges
+  public playersCount$ = new BehaviorSubject<number>(0);
+  public matchesCount$ = new BehaviorSubject<number>(0);
+  public sessionsCount$ = new BehaviorSubject<number>(0);
+  public paymentsCount$ = new BehaviorSubject<number>(0);
+
   constructor(
     private http: HttpClient,
     private toast: ToastService,
     private loader: LoaderService
-  ) { }
+  ) {
+    this.refreshCounts();
+  }
+
+  refreshCounts() {
+    this.getPlayers().subscribe(data => this.playersCount$.next(data.length));
+    this.getMatches().subscribe(data => this.matchesCount$.next(data.length));
+    this.getSessions().subscribe(data => this.sessionsCount$.next(data.length));
+    this.getPayments().subscribe(data => this.paymentsCount$.next(data.length));
+  }
 
   getPlayers(): Observable<Player[]> {
     return this.http.get<Player[]>(`${this.apiUrl}/players/`);
@@ -91,7 +109,10 @@ export class DataService {
   addPlayer(player: any): Observable<Player> {
     this.loader.show();
     return this.http.post<Player>(`${this.apiUrl}/players/`, player).pipe(
-      tap(() => this.toast.success('Player saved successfully!')),
+      tap(() => {
+        this.toast.success('Player saved successfully!');
+        this.refreshCounts();
+      }),
       finalize(() => this.loader.hide())
     );
   }
@@ -99,7 +120,10 @@ export class DataService {
   deletePlayer(id: number): Observable<void> {
     this.loader.show();
     return this.http.delete<void>(`${this.apiUrl}/players/${id}/`).pipe(
-      tap(() => this.toast.success('Player removed!')),
+      tap(() => {
+        this.toast.success('Player removed!');
+        this.refreshCounts();
+      }),
       finalize(() => this.loader.hide())
     );
   }
@@ -107,7 +131,10 @@ export class DataService {
   addMatch(match: Omit<Match, 'id'>): Observable<Match> {
     this.loader.show();
     return this.http.post<Match>(`${this.apiUrl}/matches/`, match).pipe(
-      tap(() => this.toast.success('Match scheduled successfully!')),
+      tap(() => {
+        this.toast.success('Match scheduled successfully!');
+        this.refreshCounts();
+      }),
       finalize(() => this.loader.hide())
     );
   }
@@ -115,7 +142,10 @@ export class DataService {
   deleteMatch(id: number): Observable<void> {
     this.loader.show();
     return this.http.delete<void>(`${this.apiUrl}/matches/${id}/`).pipe(
-      tap(() => this.toast.success('Match deleted!')),
+      tap(() => {
+        this.toast.success('Match deleted!');
+        this.refreshCounts();
+      }),
       finalize(() => this.loader.hide())
     );
   }
@@ -123,7 +153,10 @@ export class DataService {
   addSession(session: Omit<Session, 'id'>): Observable<Session> {
     this.loader.show();
     return this.http.post<Session>(`${this.apiUrl}/sessions/`, session).pipe(
-      tap(() => this.toast.success('Session created successfully!')),
+      tap(() => {
+        this.toast.success('Session created successfully!');
+        this.refreshCounts();
+      }),
       finalize(() => this.loader.hide())
     );
   }
@@ -131,7 +164,10 @@ export class DataService {
   deleteSession(id: number): Observable<void> {
     this.loader.show();
     return this.http.delete<void>(`${this.apiUrl}/sessions/${id}/`).pipe(
-      tap(() => this.toast.success('Session removed!')),
+      tap(() => {
+        this.toast.success('Session removed!');
+        this.refreshCounts();
+      }),
       finalize(() => this.loader.hide())
     );
   }
@@ -139,7 +175,10 @@ export class DataService {
   addPayment(payment: Omit<Payment, 'id'>): Observable<Payment> {
     this.loader.show();
     return this.http.post<Payment>(`${this.apiUrl}/payments/`, payment).pipe(
-      tap(() => this.toast.success('Payment recorded successfully!')),
+      tap(() => {
+        this.toast.success('Payment recorded successfully!');
+        this.refreshCounts();
+      }),
       finalize(() => this.loader.hide())
     );
   }
@@ -147,7 +186,10 @@ export class DataService {
   updatePlayer(id: number, player: any): Observable<Player> {
     this.loader.show();
     return this.http.put<Player>(`${this.apiUrl}/players/${id}/`, player).pipe(
-      tap(() => this.toast.success('Player updated!')),
+      tap(() => {
+        this.toast.success('Player updated!');
+        this.refreshCounts();
+      }),
       finalize(() => this.loader.hide())
     );
   }
@@ -155,7 +197,10 @@ export class DataService {
   updateSession(id: number, session: Session): Observable<Session> {
     this.loader.show();
     return this.http.put<Session>(`${this.apiUrl}/sessions/${id}/`, session).pipe(
-      tap(() => this.toast.success('Session updated!')),
+      tap(() => {
+        this.toast.success('Session updated!');
+        this.refreshCounts();
+      }),
       finalize(() => this.loader.hide())
     );
   }
