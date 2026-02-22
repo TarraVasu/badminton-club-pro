@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { LoaderService } from '../../services/loader.service';
@@ -9,7 +9,7 @@ import { ToastService } from '../../services/toast.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
   showPassword = false;
@@ -22,6 +22,10 @@ export class LoginComponent {
     public loader: LoaderService,
     private toast: ToastService
   ) { }
+
+  ngOnInit(): void {
+    sessionStorage.clear();
+  }
 
   toggleLamp() {
     this.isLampOn = !this.isLampOn;
