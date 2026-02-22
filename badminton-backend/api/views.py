@@ -43,7 +43,13 @@ class CustomObtainAuthToken(ObtainAuthToken):
             return Response({'error': 'user_not_found'}, status=status.HTTP_404_NOT_FOUND)
 
         # User exists, now check password
+        # First try authenticating with the raw input (could be username or email)
         user = authenticate(username=username, password=password)
+        
+        # If that fails, try authenticating with the actual username we found in the DB
+        if user is None and user_found:
+            user = authenticate(username=user_found.username, password=password)
+
         if user is None:
             return Response({'error': 'invalid_password'}, status=status.HTTP_401_UNAUTHORIZED)
 
