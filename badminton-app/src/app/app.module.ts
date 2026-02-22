@@ -15,6 +15,7 @@ import { PaymentsComponent } from './components/payments/payments.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { ToastComponent } from './components/toast/toast.component';
 import { LoginComponent } from './components/login/login.component';
+import { LoaderComponent } from './components/loader/loader.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { LoginComponent } from './components/login/login.component';
     LeaderboardComponent,
     ToastComponent,
     LoginComponent,
+    LoaderComponent,
   ],
   imports: [
     BrowserModule,

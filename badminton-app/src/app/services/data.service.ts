@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, finalize } from 'rxjs/operators';
 import { ToastService } from './toast.service';
+import { LoaderService } from './loader.service';
 import { environment } from '../../environments/environment';
 
 export interface Player {
@@ -65,7 +66,11 @@ export class DataService {
 
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient, private toast: ToastService) { }
+  constructor(
+    private http: HttpClient,
+    private toast: ToastService,
+    private loader: LoaderService
+  ) { }
 
   getPlayers(): Observable<Player[]> {
     return this.http.get<Player[]>(`${this.apiUrl}/players/`);
@@ -84,56 +89,74 @@ export class DataService {
   }
 
   addPlayer(player: any): Observable<Player> {
+    this.loader.show();
     return this.http.post<Player>(`${this.apiUrl}/players/`, player).pipe(
-      tap(() => this.toast.success('Player saved successfully!'))
+      tap(() => this.toast.success('Player saved successfully!')),
+      finalize(() => this.loader.hide())
     );
   }
 
   deletePlayer(id: number): Observable<void> {
+    this.loader.show();
     return this.http.delete<void>(`${this.apiUrl}/players/${id}/`).pipe(
-      tap(() => this.toast.success('Player removed!'))
+      tap(() => this.toast.success('Player removed!')),
+      finalize(() => this.loader.hide())
     );
   }
 
   addMatch(match: Omit<Match, 'id'>): Observable<Match> {
+    this.loader.show();
     return this.http.post<Match>(`${this.apiUrl}/matches/`, match).pipe(
-      tap(() => this.toast.success('Match scheduled successfully!'))
+      tap(() => this.toast.success('Match scheduled successfully!')),
+      finalize(() => this.loader.hide())
     );
   }
 
   deleteMatch(id: number): Observable<void> {
+    this.loader.show();
     return this.http.delete<void>(`${this.apiUrl}/matches/${id}/`).pipe(
-      tap(() => this.toast.success('Match deleted!'))
+      tap(() => this.toast.success('Match deleted!')),
+      finalize(() => this.loader.hide())
     );
   }
 
   addSession(session: Omit<Session, 'id'>): Observable<Session> {
+    this.loader.show();
     return this.http.post<Session>(`${this.apiUrl}/sessions/`, session).pipe(
-      tap(() => this.toast.success('Session created successfully!'))
+      tap(() => this.toast.success('Session created successfully!')),
+      finalize(() => this.loader.hide())
     );
   }
 
   deleteSession(id: number): Observable<void> {
+    this.loader.show();
     return this.http.delete<void>(`${this.apiUrl}/sessions/${id}/`).pipe(
-      tap(() => this.toast.success('Session removed!'))
+      tap(() => this.toast.success('Session removed!')),
+      finalize(() => this.loader.hide())
     );
   }
 
   addPayment(payment: Omit<Payment, 'id'>): Observable<Payment> {
+    this.loader.show();
     return this.http.post<Payment>(`${this.apiUrl}/payments/`, payment).pipe(
-      tap(() => this.toast.success('Payment recorded successfully!'))
+      tap(() => this.toast.success('Payment recorded successfully!')),
+      finalize(() => this.loader.hide())
     );
   }
 
   updatePlayer(id: number, player: any): Observable<Player> {
+    this.loader.show();
     return this.http.put<Player>(`${this.apiUrl}/players/${id}/`, player).pipe(
-      tap(() => this.toast.success('Player updated!'))
+      tap(() => this.toast.success('Player updated!')),
+      finalize(() => this.loader.hide())
     );
   }
 
   updateSession(id: number, session: Session): Observable<Session> {
+    this.loader.show();
     return this.http.put<Session>(`${this.apiUrl}/sessions/${id}/`, session).pipe(
-      tap(() => this.toast.success('Session updated!'))
+      tap(() => this.toast.success('Session updated!')),
+      finalize(() => this.loader.hide())
     );
   }
 }
