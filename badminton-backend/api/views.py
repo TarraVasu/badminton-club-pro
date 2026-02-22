@@ -4,6 +4,8 @@ from rest_framework import viewsets, status
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from .models import Player, Match, Session, Payment
 from .serializers import PlayerSerializer, MatchSerializer, SessionSerializer, PaymentSerializer
 
@@ -35,39 +37,35 @@ class CustomObtainAuthToken(ObtainAuthToken):
         from django.db.models import Q
         User = get_user_model()
 
-        # Check if user exists (case-insensitive and checking both username and email)
-        # Using a single query with Q for better compatibility with Djongo
-        user_found = User.objects.filter(Q(username__iexact=username) | Q(email__iexact=username)).first()
-        
-        if not user_found:
-            return Response({'error': 'user_not_found'}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            # Check if user exists (case-insensitive and checking both username and email)
+            user_found = User.objects.filter(Q(username__iexact=username) | Q(email__iexact=username)).first()
+            
+            if not user_found:
+                return Response({'error': 'user_not_found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # User exists, now check password
-        # First try authenticating with the raw input (could be username or email)
-        user = authenticate(username=username, password=password)
-        
-        # If that fails, try authenticating with the actual username we found in the DB
-        if user is None and user_found:
+            # User exists, now check password
             user = authenticate(username=user_found.username, password=password)
 
-        if user is None:
-            return Response({'error': 'invalid_password'}, status=status.HTTP_401_UNAUTHORIZED)
+            if user is None:
+                return Response({'error': 'invalid_password'}, status=status.HTTP_401_UNAUTHORIZED)
 
-        if not user.is_active:
-            return Response({'error': 'User account is disabled'}, status=status.HTTP_403_FORBIDDEN)
+            if not user.is_active:
+                return Response({'error': 'User account is disabled'}, status=status.HTTP_403_FORBIDDEN)
 
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email,
-            'username': user.username,
-            'full_name': f"{user.first_name} {user.last_name}".strip() or user.username,
-            'is_staff': user.is_staff,
-            'is_superuser': user.is_superuser
-        })
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'token': token.key,
+                'user_id': user.pk,
+                'email': user.email,
+                'username': user.username,
+                'full_name': f"{user.first_name} {user.last_name}".strip() or user.username,
+                'is_staff': user.is_staff,
+                'is_superuser': user.is_superuser
+            })
+        except Exception as e:
+            print(f"Login error: {str(e)}")
+            return Response({'error': 'internal_server_error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -78,7 +76,6 @@ class ProfileView(APIView):
             serializer = PlayerSerializer(player)
             return Response(serializer.data)
         except Player.DoesNotExist:
-            # Create a blank player profile if it doesn't exist
             player = Player.objects.create(
                 user=request.user,
                 name=request.user.username,
@@ -88,6 +85,8 @@ class ProfileView(APIView):
             )
             serializer = PlayerSerializer(player)
             return Response(serializer.data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def put(self, request):
         try:
@@ -99,3 +98,5 @@ class ProfileView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Player.DoesNotExist:
             return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
