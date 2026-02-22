@@ -29,6 +29,11 @@ import os
 
 ALLOWED_HOSTS = ['*'] # In production, replace with your specific domain
 
+AUTHENTICATION_BACKENDS = [
+    'api.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 # Application definition
 
