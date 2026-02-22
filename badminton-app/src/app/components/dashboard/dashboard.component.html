@@ -12,7 +12,7 @@
 
     <!-- Stats Grid -->
     <div class="grid-4 mb-24 animate-stagger">
-        <div class="stat-card green">
+        <div class="stat-card green card-3d">
             <div class="stat-icon green">👥</div>
             <div class="stat-info">
                 <div class="stat-value">{{ stats.totalPlayers }}</div>
@@ -20,7 +20,7 @@
                 <div class="stat-change up">↑ 2 this month</div>
             </div>
         </div>
-        <div class="stat-card purple">
+        <div class="stat-card purple card-3d">
             <div class="stat-icon purple">🏸</div>
             <div class="stat-info">
                 <div class="stat-value">{{ stats.totalMatches }}</div>
@@ -28,7 +28,7 @@
                 <div class="stat-change up">{{ stats.liveMatches }} live now</div>
             </div>
         </div>
-        <div class="stat-card orange">
+        <div class="stat-card orange card-3d">
             <div class="stat-icon orange">📅</div>
             <div class="stat-info">
                 <div class="stat-value">{{ stats.upcomingSessions }}</div>
@@ -36,7 +36,7 @@
                 <div class="stat-change up">↑ Today 2</div>
             </div>
         </div>
-        <div class="stat-card blue">
+        <div class="stat-card blue card-3d">
             <div class="stat-icon blue">💰</div>
             <div class="stat-info">
                 <div class="stat-value">₹{{ stats.totalRevenue / 1000 | number:'1.1-1' }}K</div>
@@ -49,7 +49,7 @@
     <!-- Main Grid -->
     <div class="main-grid">
         <!-- Recent Matches -->
-        <div class="card">
+        <div class="card card-3d">
             <div class="card-header">
                 <h3>🎯 Recent Matches</h3>
                 <button class="btn btn-sm btn-outline" (click)="goTo('matches')">View All</button>
