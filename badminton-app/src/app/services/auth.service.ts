@@ -26,7 +26,7 @@ export class AuthService {
 
     get user() {
         const stored = localStorage.getItem('userData');
-        return stored ? JSON.parse(stored) : { full_name: 'Guest', role: 'User' };
+        return stored ? JSON.parse(stored) : { login_id: 'Guest', role: 'User' };
     }
 
     login(username: string, pass: string) {
@@ -40,7 +40,8 @@ export class AuthService {
                     localStorage.setItem('token', res.token);
                     localStorage.setItem('userData', JSON.stringify({
                         full_name: res.full_name,
-                        role: 'Administrator' // Default role for now
+                        login_id: res.email || res.username,
+                        role: 'Administrator'
                     }));
                     this.toast.success('🎉 Welcome back!');
                     this.router.navigate(['/dashboard']);
