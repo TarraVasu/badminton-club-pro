@@ -7,6 +7,7 @@ import { SessionsComponent } from './components/sessions/sessions.component';
 import { PaymentsComponent } from './components/payments/payments.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { LoginComponent } from './components/login/login.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'sessions', component: SessionsComponent, canActivate: [AuthGuard] },
   { path: 'payments', component: PaymentsComponent, canActivate: [AuthGuard] },
   { path: 'leaderboard', component: LeaderboardComponent, canActivate: [AuthGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: 'dashboard' },
 ];
 

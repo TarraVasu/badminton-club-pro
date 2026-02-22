@@ -1,0 +1,93 @@
+<div class="profile-container px-4">
+    <div class="page-header animate-fade-in">
+        <div>
+            <h1>👤 Personal Profile</h1>
+            <p>View and manage your personal club details</p>
+        </div>
+    </div>
+
+    <div class="grid-layout animate-fade-in" style="animation-delay: 0.1s">
+        <!-- Left Column: Avatar & Quick Stats -->
+        <div class="profile-col profile-card card-3d">
+            <div class="avatar-section">
+                <div class="profile-avatar large">
+                    <img *ngIf="profile.image" [src]="profile.image" alt="Avatar">
+                    <span *ngIf="!profile.image">{{ profile.avatar }}</span>
+                </div>
+                <h2 class="mt-16">{{ profile.name }}</h2>
+                <span class="badge badge-purple">{{ profile.level || 'Beginner' }}</span>
+                <p class="text-muted mt-8">{{ profile.email }}</p>
+            </div>
+
+            <div class="stats-mini mt-24">
+                <div class="pstat">
+                    <span class="pstat-val">{{ profile.wins || 0 }}</span>
+                    <span class="pstat-label">Wins</span>
+                </div>
+                <div class="pstat">
+                    <span class="pstat-val">{{ profile.points || 0 }}</span>
+                    <span class="pstat-label">Points</span>
+                </div>
+                <div class="pstat">
+                    <span class="pstat-val">{{ profile.matchesPlayed || 0 }}</span>
+                    <span class="pstat-label">Matches</span>
+                </div>
+            </div>
+
+            <div class="membership-info mt-24">
+                <div class="info-row">
+                    <span>Status</span>
+                    <span class="badge badge-success">{{ profile.status || 'Active' }}</span>
+                </div>
+                <div class="info-row">
+                    <span>Joined</span>
+                    <span>{{ profile.joinDate | date:'MMMM yyyy' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Edit Form -->
+        <div class="profile-col profile-edit-card card-3d">
+            <div class="section-title">Edit Personal Details</div>
+
+            <div class="form-container">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" [(ngModel)]="profile.name" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" [(ngModel)]="profile.phone" placeholder="e.g. +91 9876543210">
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Skill Level</label>
+                        <select [(ngModel)]="profile.level">
+                            <option value="Beginner">🌱 Beginner</option>
+                            <option value="Intermediate">🌟 Intermediate</option>
+                            <option value="Advanced">⚡ Advanced</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Profile Picture</label>
+                    <div class="file-drop-zone">
+                        <input type="file" (change)="onFileSelected($event)" accept="image/*">
+                        <p *ngIf="!selectedFile">Click to upload a new photo</p>
+                        <p *ngIf="selectedFile" class="text-primary">Selected: {{ selectedFile.name }}</p>
+                    </div>
+                </div>
+
+                <div class="form-error mt-12" *ngIf="formError">{{ formError }}</div>
+
+                <div class="form-actions mt-24">
+                    <button class="btn btn-primary w-full animate-scale-in" (click)="saveProfile()">💾 Update
+                        Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

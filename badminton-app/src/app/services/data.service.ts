@@ -204,4 +204,15 @@ export class DataService {
       finalize(() => this.loader.hide())
     );
   }
+  getProfile(): Observable<Player> {
+    return this.http.get<Player>(`${this.apiUrl}/profile/`);
+  }
+
+  updateProfile(profile: any): Observable<Player> {
+    this.loader.show();
+    return this.http.put<Player>(`${this.apiUrl}/profile/`, profile).pipe(
+      tap(() => this.toast.success('Profile updated successfully!')),
+      finalize(() => this.loader.hide())
+    );
+  }
 }

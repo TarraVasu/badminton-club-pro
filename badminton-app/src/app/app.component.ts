@@ -1,4 +1,5 @@
 import { Component, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
 import { ThemeService } from './services/theme.service';
 import { AuthService } from './services/auth.service';
 
@@ -14,7 +15,7 @@ export class AppComponent {
   isMobile = false;
   userDropdownOpen = false;
 
-  constructor(public themeService: ThemeService, public auth: AuthService) {
+  constructor(public themeService: ThemeService, public auth: AuthService, private router: Router) {
     this.checkMobile();
   }
 
@@ -42,6 +43,11 @@ export class AppComponent {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     this.userDropdownOpen = false;
+  }
+
+  goToProfile() {
+    this.userDropdownOpen = false;
+    this.router.navigate(['/profile']);
   }
 
   handleLogout() {

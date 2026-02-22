@@ -66,3 +66,36 @@ class CustomObtainAuthToken(ObtainAuthToken):
             'is_staff': user.is_staff,
             'is_superuser': user.is_superuser
         })
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            player = Player.objects.get(user=request.user)
+            serializer = PlayerSerializer(player)
+            return Response(serializer.data)
+        except Player.DoesNotExist:
+            # Create a blank player profile if it doesn't exist
+            player = Player.objects.create(
+                user=request.user,
+                name=request.user.username,
+                email=request.user.email,
+                avatar=request.user.username[0].upper() if request.user.username else '?',
+                joinDate=request.user.date_joined.date()
+            )
+            serializer = PlayerSerializer(player)
+            return Response(serializer.data)
+
+    def put(self, request):
+        try:
+            player = Player.objects.get(user=request.user)
+            serializer = PlayerSerializer(player, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Player.DoesNotExist:
+            return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)

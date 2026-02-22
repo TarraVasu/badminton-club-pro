@@ -45,6 +45,11 @@
               <p class="user-role">{{ auth.user.role }}</p>
             </div>
             <div class="dropdown-divider"></div>
+            <a class="dropdown-item" (click)="goToProfile()">
+              <span class="item-icon">👤</span>
+              My Profile
+            </a>
+            <div class="dropdown-divider"></div>
             <a class="dropdown-item" (click)="handleLogout()">
               <span class="item-icon">🚪</span>
               Logout

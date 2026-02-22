@@ -16,6 +16,7 @@ import { LeaderboardComponent } from './components/leaderboard/leaderboard.compo
 import { ToastComponent } from './components/toast/toast.component';
 import { LoginComponent } from './components/login/login.component';
 import { LoaderComponent } from './components/loader/loader.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { LoaderComponent } from './components/loader/loader.component';
     ToastComponent,
     LoginComponent,
     LoaderComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
