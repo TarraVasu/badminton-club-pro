@@ -12,6 +12,7 @@ export class AppComponent {
   sidebarCollapsed = false;
   mobileOpen = false;
   isMobile = false;
+  userDropdownOpen = false;
 
   constructor(public themeService: ThemeService, public auth: AuthService) {
     this.checkMobile();
@@ -31,5 +32,20 @@ export class AppComponent {
 
   closeMobileMenu() {
     this.mobileOpen = false;
+  }
+
+  toggleUserDropdown(event: Event) {
+    event.stopPropagation();
+    this.userDropdownOpen = !this.userDropdownOpen;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    this.userDropdownOpen = false;
+  }
+
+  handleLogout() {
+    this.userDropdownOpen = false;
+    this.auth.logout();
   }
 }
