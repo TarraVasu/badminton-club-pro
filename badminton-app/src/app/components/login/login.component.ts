@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
+import { LoaderService } from '../../services/loader.service';
 
 @Component({
   selector: 'app-login',
@@ -10,15 +11,10 @@ export class LoginComponent {
   email = '';
   password = '';
   showPassword = false;
-  isLoading = false;
 
-  constructor(private auth: AuthService) { }
+  constructor(private auth: AuthService, public loader: LoaderService) { }
 
   onLogin() {
-    this.isLoading = true;
-    setTimeout(() => {
-      this.auth.login(this.email, this.password);
-      this.isLoading = false;
-    }, 1000);
+    this.auth.login(this.email, this.password);
   }
 }
