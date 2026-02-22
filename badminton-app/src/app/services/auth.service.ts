@@ -24,6 +24,11 @@ export class AuthService {
         return this._isLoggedIn;
     }
 
+    get user() {
+        const stored = localStorage.getItem('userData');
+        return stored ? JSON.parse(stored) : { full_name: 'Guest', role: 'User' };
+    }
+
     login(username: string, pass: string) {
         this.loader.show();
         this.http.post<any>(`${this.baseUrl}/api-token-auth/`, { username, password: pass })
@@ -33,6 +38,10 @@ export class AuthService {
                     this._isLoggedIn = true;
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('token', res.token);
+                    localStorage.setItem('userData', JSON.stringify({
+                        full_name: res.full_name,
+                        role: 'Administrator' // Default role for now
+                    }));
                     this.toast.success('🎉 Welcome back!');
                     this.router.navigate(['/dashboard']);
                 },
@@ -48,6 +57,7 @@ export class AuthService {
         this._isLoggedIn = false;
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('token');
+        localStorage.removeItem('userData');
         // Use replaceUrl to prevent the back button from returning to protected pages
         this.router.navigateByUrl('/login', { replaceUrl: true });
     }
