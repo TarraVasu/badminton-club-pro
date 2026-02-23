@@ -7,6 +7,18 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "badminton_backend.settings")
+    
+    # Compatibility patch for djongo
+    import django.utils
+    try:
+        from django.utils import six
+    except ImportError:
+        try:
+            import six
+            django.utils.six = six
+        except ImportError:
+            pass
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
