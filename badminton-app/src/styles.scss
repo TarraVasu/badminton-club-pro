@@ -478,11 +478,13 @@ body {
         position: absolute;
         top: calc(100% + 12px);
         right: 0;
-        width: 200px;
+        min-width: 240px;
+        width: max-content;
+        max-width: 320px;
         background: var(--bg-card);
         border: 1px solid var(--border);
         border-radius: var(--radius-sm);
-        padding: 8px;
+        padding: 12px;
         box-shadow: var(--shadow);
         backdrop-filter: blur(10px);
         opacity: 0;
@@ -505,6 +507,10 @@ body {
             font-size: 14px;
             color: var(--text-primary);
             margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
           }
 
           .user-role {
