@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService, Match } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-matches',
@@ -24,7 +25,7 @@ export class MatchesComponent implements OnInit {
   get activeTab() { return this._activeTab; }
   set activeTab(val: string) { this._activeTab = val; this.filterMatches(); }
 
-  constructor(private data: DataService, public auth: AuthService) { }
+  constructor(private data: DataService, public auth: AuthService, private router: Router) { }
 
   get userRole() { return this.auth.user.role; }
 
@@ -114,5 +115,9 @@ export class MatchesComponent implements OnInit {
       'badge-danger': status === 'Live',
       'badge-info': status === 'Scheduled',
     };
+  }
+
+  viewStats() {
+    this.router.navigate(['/']);
   }
 }

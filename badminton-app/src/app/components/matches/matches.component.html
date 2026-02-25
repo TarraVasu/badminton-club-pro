@@ -5,7 +5,7 @@
             <p>Track all {{ matches.length }} matches — live, scheduled and completed</p>
         </div>
         <div class="header-actions" *ngIf="userRole === 'Admin'">
-            <button class="btn btn-outline">📊 Stats</button>
+            <button class="btn btn-outline" (click)="viewStats()">📊 Stats</button>
             <button class="btn btn-primary animate-scale-in" (click)="openScheduleModal()">+ Schedule Match</button>
         </div>
     </div>

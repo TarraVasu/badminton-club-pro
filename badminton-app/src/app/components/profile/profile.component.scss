@@ -19,7 +19,9 @@
 }
 
 .profile-card {
-    background: white;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     padding: 2.5rem;
     text-align: center;
 }
@@ -29,16 +31,16 @@
     height: 140px;
     margin: 0 auto;
     font-size: 3rem;
-    border: 4px solid var(--gray-50);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    border: 4px solid var(--border);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .stats-mini {
     display: flex;
     justify-content: space-around;
     padding: 1.5rem 0;
-    border-top: 1px solid var(--gray-100);
-    border-bottom: 1px solid var(--gray-100);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
 
     .pstat {
         display: flex;
@@ -47,12 +49,12 @@
         .pstat-val {
             font-size: 1.25rem;
             font-weight: 700;
-            color: var(--gray-900);
+            color: var(--text-primary);
         }
 
         .pstat-label {
             font-size: 0.75rem;
-            color: var(--gray-500);
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -67,18 +69,20 @@
         font-size: 0.9rem;
 
         span:first-child {
-            color: var(--gray-500);
+            color: var(--text-muted);
         }
 
         span:last-child {
             font-weight: 600;
-            color: var(--gray-800);
+            color: var(--text-primary);
         }
     }
 }
 
 .profile-edit-card {
-    background: white;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     padding: 2.5rem;
 }
 

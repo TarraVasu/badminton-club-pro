@@ -9,8 +9,8 @@
             <p>Welcome to the community! Check out today's rankings and matches.</p>
         </div>
         <div class="header-actions" *ngIf="userRole === 'Admin'">
-            <button class="btn btn-outline">📤 Export Report</button>
-            <button class="btn btn-primary animate-scale-in">+ Add Match</button>
+            <button class="btn btn-outline" (click)="exportReport()">📤 Export Report</button>
+            <button class="btn btn-primary animate-scale-in" (click)="goTo('matches')">+ Add Match</button>
         </div>
     </div>
 
@@ -214,7 +214,7 @@
                 <button class="btn btn-primary btn-sm" (click)="goTo('payments')">View Payments</button>
                 <div class="header-actions" *ngIf="userRole === 'Admin'">
                     <button class="btn btn-primary animate-scale-in" (click)="goTo('matches')">+ Add Match</button>
-                    <button class="btn btn-outline btn-sm">📧 Send Reminders</button>
+                    <button class="btn btn-outline btn-sm" (click)="sendReminders()">📧 Send Reminders</button>
                 </div>
             </div>
         </div>

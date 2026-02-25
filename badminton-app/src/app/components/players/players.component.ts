@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService, Player } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-players',
@@ -38,8 +41,9 @@ export class PlayersComponent implements OnInit {
   newPlayer: any = this.defaultPlayer();
   editingId?: number | null = null;
   selectedFile: File | null = null;
+  imagePreview: string | ArrayBuffer | null = null;
 
-  constructor(private data: DataService, public auth: AuthService) { }
+  constructor(private data: DataService, public auth: AuthService, private toast: ToastService) { }
 
   get userRole() { return this.auth.user.role; }
 
@@ -58,6 +62,13 @@ export class PlayersComponent implements OnInit {
 
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0] as File;
+    if (this.selectedFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+      };
+      reader.readAsDataURL(this.selectedFile);
+    }
   }
 
   getColor(i: number) { return this.colorOptions[i % this.colorOptions.length]; }
@@ -77,7 +88,7 @@ export class PlayersComponent implements OnInit {
 
   setFilter(level: string) { this.levelFilter = level; this.filterPlayers(); }
 
-  openModal() { this.showModal = true; this.editMode = false; this.newPlayer = this.defaultPlayer(); this.formError = ''; this.selectedFile = null; }
+  openModal() { this.showModal = true; this.editMode = false; this.newPlayer = this.defaultPlayer(); this.formError = ''; this.selectedFile = null; this.imagePreview = null; }
   openEditModal(p: Player) {
     this.editMode = true;
     this.showModal = true;
@@ -85,8 +96,9 @@ export class PlayersComponent implements OnInit {
     this.newPlayer = { ...p };
     this.formError = '';
     this.selectedFile = null;
+    this.imagePreview = p.image || null;
   }
-  closeModal() { this.showModal = false; this.editingId = null; this.selectedFile = null; }
+  closeModal() { this.showModal = false; this.editingId = null; this.selectedFile = null; this.imagePreview = null; }
 
   savePlayer() {
     this.formError = '';
@@ -134,5 +146,69 @@ export class PlayersComponent implements OnInit {
         this.filterPlayers();
       });
     }
+  }
+
+  exportToPDF() {
+    this.toast.info('Generating PDF Report...');
+
+    setTimeout(() => {
+      try {
+        const doc = new jsPDF();
+
+        // Add Title and Brand
+        doc.setFontSize(22);
+        doc.setTextColor(0, 212, 170); // Primary color #00d4aa
+        doc.text('🐾 Birdie Beasts', 14, 22);
+
+        doc.setFontSize(16);
+        doc.setTextColor(100);
+        doc.text('Club Members Directory', 14, 32);
+
+        doc.setFontSize(10);
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 40);
+
+        // Define table columns
+        const head = [['#', 'Player Name', 'Email', 'Level', 'Wins', 'Losses', 'Points', 'Rate']];
+
+        // Prepare table data
+        const body = this.filteredPlayers.map((p, i) => [
+          i + 1,
+          p.name,
+          p.email,
+          p.level,
+          p.wins,
+          p.losses,
+          p.points,
+          `${this.getWinRate(p)}%`
+        ]);
+
+        // Generate Table
+        autoTable(doc, {
+          head: head,
+          body: body,
+          startY: 45,
+          theme: 'grid',
+          headStyles: { fillColor: [0, 212, 170], textColor: [255, 255, 255], fontStyle: 'bold' },
+          alternateRowStyles: { fillColor: [245, 245, 245] },
+          styles: { fontSize: 9, cellPadding: 3 },
+          margin: { top: 45 },
+          didDrawPage: (data) => {
+            // Footer with page number
+            const str = 'Page ' + (doc as any).internal.getNumberOfPages();
+            doc.setFontSize(10);
+            const pageSize = doc.internal.pageSize;
+            const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+            doc.text(str, data.settings.margin.left, pageHeight - 10);
+          }
+        });
+
+        // Save PDF
+        doc.save(`Birdie_Beasts_Players_${new Date().toISOString().split('T')[0]}.pdf`);
+        this.toast.success('PDF Exported Successfully!');
+      } catch (err) {
+        console.error('PDF Export Error:', err);
+        this.toast.error('Failed to generate PDF');
+      }
+    }, 1000);
   }
 }
