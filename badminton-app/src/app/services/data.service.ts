@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap, finalize } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { tap, finalize, map } from 'rxjs/operators';
 import { ToastService } from './toast.service';
 import { LoaderService } from './loader.service';
 import { environment } from '../../environments/environment';
@@ -61,9 +61,6 @@ export interface Payment {
   reference: string;
 }
 
-import { BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
-
 @Injectable({ providedIn: 'root' })
 export class DataService {
 
@@ -75,43 +72,95 @@ export class DataService {
   public sessionsCount$ = new BehaviorSubject<number>(0);
   public paymentsCount$ = new BehaviorSubject<number>(0);
 
+  // Data Caches
+  private playersSubject = new BehaviorSubject<Player[]>([]);
+  private matchesSubject = new BehaviorSubject<Match[]>([]);
+  private sessionsSubject = new BehaviorSubject<Session[]>([]);
+  private paymentsSubject = new BehaviorSubject<Payment[]>([]);
+
+  private playersLoaded = false;
+  private matchesLoaded = false;
+  private sessionsLoaded = false;
+  private paymentsLoaded = false;
+
   constructor(
     private http: HttpClient,
     private toast: ToastService,
     private loader: LoaderService
   ) {
-    this.refreshCounts();
+    this.playersSubject.subscribe(d => this.playersCount$.next(d.length));
+    this.matchesSubject.subscribe(d => this.matchesCount$.next(d.length));
+    this.sessionsSubject.subscribe(d => this.sessionsCount$.next(d.length));
+    this.paymentsSubject.subscribe(d => this.paymentsCount$.next(d.length));
+
+    // Preload data
+    this.getPlayers().subscribe();
+    this.getMatches().subscribe();
+    this.getSessions().subscribe();
+    this.getPayments().subscribe();
   }
 
-  refreshCounts() {
-    this.getPlayers().subscribe(data => this.playersCount$.next(data.length));
-    this.getMatches().subscribe(data => this.matchesCount$.next(data.length));
-    this.getSessions().subscribe(data => this.sessionsCount$.next(data.length));
-    this.getPayments().subscribe(data => this.paymentsCount$.next(data.length));
-  }
+  // refreshCounts is no longer needed but kept for backward compatibility
+  refreshCounts() { }
 
   getPlayers(): Observable<Player[]> {
-    return this.http.get<Player[]>(`${this.apiUrl}/players/`);
+    if (this.playersLoaded) return of(this.playersSubject.value);
+
+    // this.loader.show();
+    return this.http.get<Player[]>(`${this.apiUrl}/players/`).pipe(
+      tap(data => {
+        this.playersSubject.next(data);
+        this.playersLoaded = true;
+      })
+      // finalize(() => this.loader.hide())
+    );
   }
 
   getMatches(): Observable<Match[]> {
-    return this.http.get<Match[]>(`${this.apiUrl}/matches/`);
+    if (this.matchesLoaded) return of(this.matchesSubject.value);
+
+    // this.loader.show();
+    return this.http.get<Match[]>(`${this.apiUrl}/matches/`).pipe(
+      tap(data => {
+        this.matchesSubject.next(data);
+        this.matchesLoaded = true;
+      })
+      // finalize(() => this.loader.hide())
+    );
   }
 
   getSessions(): Observable<Session[]> {
-    return this.http.get<Session[]>(`${this.apiUrl}/sessions/`);
+    if (this.sessionsLoaded) return of(this.sessionsSubject.value);
+
+    // this.loader.show();
+    return this.http.get<Session[]>(`${this.apiUrl}/sessions/`).pipe(
+      tap(data => {
+        this.sessionsSubject.next(data);
+        this.sessionsLoaded = true;
+      })
+      // finalize(() => this.loader.hide())
+    );
   }
 
   getPayments(): Observable<Payment[]> {
-    return this.http.get<Payment[]>(`${this.apiUrl}/payments/`);
+    if (this.paymentsLoaded) return of(this.paymentsSubject.value);
+
+    // this.loader.show();
+    return this.http.get<Payment[]>(`${this.apiUrl}/payments/`).pipe(
+      tap(data => {
+        this.paymentsSubject.next(data);
+        this.paymentsLoaded = true;
+      })
+      // finalize(() => this.loader.hide())
+    );
   }
 
   addPlayer(player: any): Observable<Player> {
     this.loader.show();
     return this.http.post<Player>(`${this.apiUrl}/players/`, player).pipe(
-      tap(() => {
+      tap((newPlayer) => {
+        this.playersSubject.next([...this.playersSubject.value, newPlayer]);
         this.toast.success('Player saved successfully!');
-        this.refreshCounts();
       }),
       finalize(() => this.loader.hide())
     );
@@ -121,8 +170,8 @@ export class DataService {
     this.loader.show();
     return this.http.delete<void>(`${this.apiUrl}/players/${id}/`).pipe(
       tap(() => {
+        this.playersSubject.next(this.playersSubject.value.filter(p => p.id !== id));
         this.toast.success('Player removed!');
-        this.refreshCounts();
       }),
       finalize(() => this.loader.hide())
     );
@@ -131,9 +180,9 @@ export class DataService {
   addMatch(match: Omit<Match, 'id'>): Observable<Match> {
     this.loader.show();
     return this.http.post<Match>(`${this.apiUrl}/matches/`, match).pipe(
-      tap(() => {
+      tap((newMatch) => {
+        this.matchesSubject.next([newMatch, ...this.matchesSubject.value]);
         this.toast.success('Match scheduled successfully!');
-        this.refreshCounts();
       }),
       finalize(() => this.loader.hide())
     );
@@ -143,8 +192,8 @@ export class DataService {
     this.loader.show();
     return this.http.delete<void>(`${this.apiUrl}/matches/${id}/`).pipe(
       tap(() => {
+        this.matchesSubject.next(this.matchesSubject.value.filter(p => p.id !== id));
         this.toast.success('Match deleted!');
-        this.refreshCounts();
       }),
       finalize(() => this.loader.hide())
     );
@@ -153,9 +202,9 @@ export class DataService {
   addSession(session: Omit<Session, 'id'>): Observable<Session> {
     this.loader.show();
     return this.http.post<Session>(`${this.apiUrl}/sessions/`, session).pipe(
-      tap(() => {
+      tap((newSession) => {
+        this.sessionsSubject.next([newSession, ...this.sessionsSubject.value]);
         this.toast.success('Session created successfully!');
-        this.refreshCounts();
       }),
       finalize(() => this.loader.hide())
     );
@@ -165,8 +214,8 @@ export class DataService {
     this.loader.show();
     return this.http.delete<void>(`${this.apiUrl}/sessions/${id}/`).pipe(
       tap(() => {
+        this.sessionsSubject.next(this.sessionsSubject.value.filter(p => p.id !== id));
         this.toast.success('Session removed!');
-        this.refreshCounts();
       }),
       finalize(() => this.loader.hide())
     );
@@ -175,9 +224,9 @@ export class DataService {
   addPayment(payment: Omit<Payment, 'id'>): Observable<Payment> {
     this.loader.show();
     return this.http.post<Payment>(`${this.apiUrl}/payments/`, payment).pipe(
-      tap(() => {
+      tap((newPayment) => {
+        this.paymentsSubject.next([newPayment, ...this.paymentsSubject.value]);
         this.toast.success('Payment recorded successfully!');
-        this.refreshCounts();
       }),
       finalize(() => this.loader.hide())
     );
@@ -186,9 +235,14 @@ export class DataService {
   updatePlayer(id: number, player: any): Observable<Player> {
     this.loader.show();
     return this.http.put<Player>(`${this.apiUrl}/players/${id}/`, player).pipe(
-      tap(() => {
+      tap((updated) => {
+        const current = this.playersSubject.value;
+        const idx = current.findIndex(p => p.id === id);
+        if (idx !== -1) {
+          current[idx] = updated;
+          this.playersSubject.next([...current]);
+        }
         this.toast.success('Player updated!');
-        this.refreshCounts();
       }),
       finalize(() => this.loader.hide())
     );
@@ -197,13 +251,19 @@ export class DataService {
   updateSession(id: number, session: Session): Observable<Session> {
     this.loader.show();
     return this.http.put<Session>(`${this.apiUrl}/sessions/${id}/`, session).pipe(
-      tap(() => {
+      tap((updated) => {
+        const current = this.sessionsSubject.value;
+        const idx = current.findIndex(p => p.id === id);
+        if (idx !== -1) {
+          current[idx] = updated;
+          this.sessionsSubject.next([...current]);
+        }
         this.toast.success('Session updated!');
-        this.refreshCounts();
       }),
       finalize(() => this.loader.hide())
     );
   }
+
   getProfile(): Observable<Player> {
     return this.http.get<Player>(`${this.apiUrl}/profile/`);
   }
