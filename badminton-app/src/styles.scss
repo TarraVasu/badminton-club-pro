@@ -1,35 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Premium Dark Theme with Neon Accents */
-  --primary: #ccff00;
-  /* High energy neon lime */
-  --primary-dark: #aadd00;
-  --primary-light: #e6ff66;
-  --secondary: #7b61ff;
-  /* Deep vibrant purple */
-  --accent: #ff3366;
-  /* Hot pink/red */
-  --bg-dark: #07090f;
-  /* Near black with blue tint */
-  --bg-card: #121626;
-  /* Deep navy card */
-  --bg-card2: #1a1f35;
-  /* Slightly lighter navy */
-  --bg-sidebar: #07090f;
-  --text-primary: #ffffff;
-  --text-secondary: #a0aec0;
-  --text-muted: #718096;
-  --border: rgba(255, 255, 255, 0.05);
-  --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 30px rgba(204, 255, 0, 0.15);
-  /* Lime glow */
-  --success: #10b981;
+  --primary: #00d4aa;
+  --primary-dark: #00a880;
+  --primary-light: #33debb;
+  --secondary: #6c63ff;
+  --accent: #ff6b35;
+  --bg-dark: #0a0e1a;
+  --bg-card: #111827;
+  --bg-card2: #1a2235;
+  --bg-sidebar: #0d1424;
+  --text-primary: #f0f4ff;
+  --text-secondary: #8892a4;
+  --text-muted: #4a5568;
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 30px rgba(0, 212, 170, 0.15);
+  --success: #22c55e;
   --warning: #f59e0b;
   --danger: #ef4444;
   --info: #3b82f6;
-  --gradient-primary: linear-gradient(135deg, #ccff00, #10b981);
-  --gradient-card: linear-gradient(145deg, rgba(18, 22, 38, 0.8), rgba(26, 31, 53, 0.8));
+  --gradient-primary: linear-gradient(135deg, #00d4aa, #6c63ff);
+  --gradient-card: linear-gradient(145deg, #111827, #1a2235);
   --radius: 16px;
   --radius-sm: 10px;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -328,11 +320,16 @@ body {
 .animate-stagger>* {
   opacity: 0;
 
-  @for $i from 1 through 12 {
+  @for $i from 1 through 50 {
     &:nth-child(#{$i}) {
       animation: fadeInSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      animation-delay: #{$i * 0.1}s;
+      animation-delay: #{$i * 0.05}s;
     }
+  }
+
+  &:nth-child(n+51) {
+    opacity: 1;
+    animation: none;
   }
 }
 
@@ -708,8 +705,7 @@ body {
   transition: var(--transition);
 
   &:hover {
-    border-color: rgba(204, 255, 0, 0.3);
-    /* Lime hover */
+    border-color: rgba(0, 212, 170, 0.3);
     transform: translateY(-2px);
     box-shadow: var(--shadow-glow);
   }
@@ -737,10 +733,10 @@ body {
   justify-content: space-between;
   margin-bottom: 30px;
   padding: 35px 40px;
-  background: linear-gradient(135deg, rgba(204, 255, 0, 0.1), rgba(16, 185, 129, 0.05)), url('data:image/svg+xml;utf8,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="1.5" fill="rgba(255,255,255,0.03)"/></svg>');
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(108, 99, 255, 0.05));
   background-color: var(--bg-card);
   border-radius: 24px;
-  border: 1px solid rgba(204, 255, 0, 0.2);
+  border: 1px solid rgba(0, 212, 170, 0.2);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   position: relative;
   overflow: hidden;
@@ -752,7 +748,7 @@ body {
     right: -5%;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(204, 255, 0, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0, 212, 170, 0.15) 0%, transparent 70%);
     border-radius: 50%;
     z-index: 0;
   }
@@ -765,7 +761,7 @@ body {
       font-family: 'Inter', sans-serif;
       font-size: 32px;
       font-weight: 800;
-      color: #fff;
+      // color: #fff;
       margin-bottom: 8px;
       letter-spacing: -0.5px;
 
