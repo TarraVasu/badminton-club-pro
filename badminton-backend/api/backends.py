@@ -14,11 +14,14 @@ class EmailBackend(ModelBackend):
         
         try:
             # Check if the 'username' provided is actually an email or the username
-            user = UserModel.objects.filter(Q(username__iexact=username) | Q(email__iexact=username)).distinct()
-            if user.exists():
-                user_obj = user.first()
-                if user_obj.check_password(password):
-                    return user_obj
-        except Exception:
+            # We use first() directly to avoid multiple queries (exists + first)
+            user_obj = UserModel.objects.filter(
+                Q(username__iexact=username) | Q(email__iexact=username)
+            ).first()
+            
+            if user_obj and user_obj.check_password(password):
+                return user_obj
+        except Exception as e:
+            print(f"Authentication backend error: {e}")
             return None
         return None

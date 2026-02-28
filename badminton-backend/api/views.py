@@ -38,16 +38,14 @@ class CustomObtainAuthToken(ObtainAuthToken):
         User = get_user_model()
 
         try:
-            # Check if user exists (case-insensitive and checking both username and email)
-            user_found = User.objects.filter(Q(username__iexact=username) | Q(email__iexact=username)).first()
-            
-            if not user_found:
-                return Response({'error': 'user_not_found'}, status=status.HTTP_404_NOT_FOUND)
-
-            # User exists, now check password
-            user = authenticate(username=user_found.username, password=password)
+            # User authentication via EmailBackend (handles both username and email)
+            user = authenticate(username=username, password=password)
 
             if user is None:
+                # Check if user exists to provide specific error
+                user_exists = User.objects.filter(Q(username__iexact=username) | Q(email__iexact=username)).exists()
+                if not user_exists:
+                    return Response({'error': 'user_not_found'}, status=status.HTTP_404_NOT_FOUND)
                 return Response({'error': 'invalid_password'}, status=status.HTTP_401_UNAUTHORIZED)
 
             if not user.is_active:
