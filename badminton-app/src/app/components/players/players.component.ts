@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService, Player } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -43,7 +44,7 @@ export class PlayersComponent implements OnInit {
   selectedFile: File | null = null;
   imagePreview: string | ArrayBuffer | null = null;
 
-  constructor(private data: DataService, public auth: AuthService, private toast: ToastService) { }
+  constructor(private data: DataService, public auth: AuthService, private toast: ToastService, private confirmDialog: ConfirmDialogService) { }
 
   get userRole() { return this.auth.user.role; }
 
@@ -122,16 +123,13 @@ export class PlayersComponent implements OnInit {
     }
 
     if (this.editMode && this.editingId) {
-      this.data.updatePlayer(this.editingId, formData).subscribe(updated => {
-        const idx = this.players.findIndex(p => p.id === this.editingId);
-        if (idx !== -1) {
-          this.players[idx] = updated;
-          this.filterPlayers();
-        }
+      this.data.updatePlayer(this.editingId, formData).subscribe(players => {
+        this.players = players;
+        this.filterPlayers();
       });
     } else {
-      this.data.addPlayer(formData).subscribe(p => {
-        this.players.push(p);
+      this.data.addPlayer(formData).subscribe(players => {
+        this.players = players;
         this.filterPlayers();
       });
     }
@@ -139,10 +137,18 @@ export class PlayersComponent implements OnInit {
     this.closeModal();
   }
 
-  deletePlayer(id?: number) {
-    if (id && confirm('Remove this player?')) {
-      this.data.deletePlayer(id).subscribe(() => {
-        this.players = this.players.filter(p => p.id !== id);
+  async deletePlayer(id?: number) {
+    if (!id) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Remove Player',
+      message: 'Are you sure you want to remove this player? This action cannot be undone.',
+      confirmText: 'Yes, Remove',
+      cancelText: 'Cancel',
+      type: 'danger'
+    });
+    if (confirmed) {
+      this.data.deletePlayer(id).subscribe(players => {
+        this.players = players;
         this.filterPlayers();
       });
     }

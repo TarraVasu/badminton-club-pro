@@ -18,6 +18,7 @@ import { ToastComponent } from './components/toast/toast.component';
 import { LoginComponent } from './components/login/login.component';
 import { LoaderComponent } from './components/loader/loader.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { ProfileComponent } from './components/profile/profile.component';
     LoginComponent,
     LoaderComponent,
     ProfileComponent,
+    ConfirmDialogComponent,
   ],
   imports: [
     BrowserModule,

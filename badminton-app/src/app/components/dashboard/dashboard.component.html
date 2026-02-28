@@ -20,18 +20,22 @@
             </div>
         </div>
     </div>
-    <div class="page-header animate-fade-in">
-        <div *ngIf="userRole === 'Admin'">
-            <h1>🏸 Admin Dashboard</h1>
-            <p>Welcome back! Here's what's happening at your club today.</p>
+    <div class="hero-banner animate-fade-in">
+        <div class="hero-content" *ngIf="userRole === 'Admin'">
+            <h1>Welcome back, <span>Admin!</span></h1>
+            <p>Your club management dashboard. Here is a quick overview of today's activities, matches, and revenue.</p>
         </div>
-        <div *ngIf="userRole === 'Player'">
-            <h1>🏸 Player Lounge</h1>
-            <p>Welcome to the community! Check out today's rankings and matches.</p>
+        <div class="hero-content" *ngIf="userRole === 'Player'">
+            <h1>Ready to play, <span>Champion?</span></h1>
+            <p>Welcome to the player lounge. Check out your rankings, upcoming sessions, and recent matches.</p>
         </div>
-        <div class="header-actions" *ngIf="userRole === 'Admin'">
-            <button class="btn btn-outline" (click)="exportReport()">📤 Export Report</button>
-            <button class="btn btn-primary animate-scale-in" (click)="goTo('matches')">+ Add Match</button>
+        <div class="hero-actions" *ngIf="userRole === 'Admin'">
+            <button class="btn btn-outline"
+                style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2)"
+                (click)="exportReport()">📤 Export Report</button>
+            <button class="btn btn-primary animate-scale-in"
+                style="background: var(--primary); color: #000; box-shadow: 0 0 15px rgba(204,255,0,0.4)"
+                (click)="goTo('matches')">+ Add Match</button>
         </div>
     </div>
 

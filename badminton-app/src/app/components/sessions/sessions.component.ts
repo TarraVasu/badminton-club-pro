@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService, Session } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 
 @Component({
   selector: 'app-sessions',
@@ -16,7 +17,7 @@ export class SessionsComponent implements OnInit {
 
   newSession: any = this.defaultSession();
 
-  constructor(private data: DataService, public auth: AuthService) { }
+  constructor(private data: DataService, public auth: AuthService, private confirmDialog: ConfirmDialogService) { }
 
   get userRole() { return this.auth.user.role; }
   ngOnInit() {
@@ -54,22 +55,29 @@ export class SessionsComponent implements OnInit {
     if (!this.newSession.court) { this.formError = 'Please select a court.'; return; }
 
     if (this.editMode && this.editingId) {
-      this.data.updateSession(this.editingId, { ...this.newSession, id: this.editingId }).subscribe(updated => {
-        const idx = this.sessions.findIndex(s => s.id === this.editingId);
-        if (idx !== -1) this.sessions[idx] = updated;
+      this.data.updateSession(this.editingId, { ...this.newSession, id: this.editingId }).subscribe(sessions => {
+        this.sessions = sessions;
       });
     } else {
-      this.data.addSession(this.newSession).subscribe(newS => {
-        this.sessions.push(newS);
+      this.data.addSession(this.newSession).subscribe(sessions => {
+        this.sessions = sessions;
       });
     }
     this.closeModal();
   }
 
-  deleteSession(id?: number) {
-    if (id && confirm('Delete this session?')) {
-      this.data.deleteSession(id).subscribe(() => {
-        this.sessions = this.sessions.filter(s => s.id !== id);
+  async deleteSession(id?: number) {
+    if (!id) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Delete Session',
+      message: 'Are you sure you want to delete this session? This cannot be undone.',
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger'
+    });
+    if (confirmed) {
+      this.data.deleteSession(id).subscribe(sessions => {
+        this.sessions = sessions;
       });
     }
   }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService, Match } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 
 @Component({
   selector: 'app-matches',
@@ -25,7 +26,7 @@ export class MatchesComponent implements OnInit {
   get activeTab() { return this._activeTab; }
   set activeTab(val: string) { this._activeTab = val; this.filterMatches(); }
 
-  constructor(private data: DataService, public auth: AuthService, private router: Router) { }
+  constructor(private data: DataService, public auth: AuthService, private router: Router, private confirmDialog: ConfirmDialogService) { }
 
   get userRole() { return this.auth.user.role; }
 
@@ -74,8 +75,8 @@ export class MatchesComponent implements OnInit {
       winner: '-',
       duration: '-'
     };
-    this.data.addMatch(m).subscribe(newM => {
-      this.matches.push(newM);
+    this.data.addMatch(m).subscribe(matches => {
+      this.matches = matches;
       this.filterMatches();
     });
     this.closeScheduleModal();
@@ -100,10 +101,18 @@ export class MatchesComponent implements OnInit {
     this.closeScoreModal();
   }
 
-  deleteMatch(id?: number) {
-    if (id && confirm('Delete this match?')) {
-      this.data.deleteMatch(id).subscribe(() => {
-        this.matches = this.matches.filter(m => m.id !== id);
+  async deleteMatch(id?: number) {
+    if (!id) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Delete Match',
+      message: 'Are you sure you want to delete this match record? This cannot be undone.',
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger'
+    });
+    if (confirmed) {
+      this.data.deleteMatch(id).subscribe(matches => {
+        this.matches = matches;
         this.filterMatches();
       });
     }

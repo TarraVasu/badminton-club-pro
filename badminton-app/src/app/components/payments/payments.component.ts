@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService, Payment } from '../../services/data.service';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 
 @Component({
   selector: 'app-payments',
@@ -29,7 +30,7 @@ export class PaymentsComponent implements OnInit {
 
   newPayment: any = this.defaultPayment();
 
-  constructor(private data: DataService) { }
+  constructor(private data: DataService, private confirmDialog: ConfirmDialogService) { }
 
   ngOnInit() {
     this.data.getPayments().subscribe(payments => {
@@ -71,8 +72,7 @@ export class PaymentsComponent implements OnInit {
     if (!this.newPayment.amount || this.newPayment.amount <= 0) { this.formError = 'Please enter a valid amount.'; return; }
 
     const ref = this.newPayment.reference?.trim() || ('TXN' + Math.floor(Math.random() * 999999).toString().padStart(6, '0'));
-    const payment: Payment = {
-      id: this.payments.length + 1,
+    const payment: Omit<Payment, 'id'> = {
       player: this.newPayment.player,
       amount: this.newPayment.amount,
       type: this.newPayment.type,
@@ -81,9 +81,11 @@ export class PaymentsComponent implements OnInit {
       method: this.newPayment.status === 'Paid' ? this.newPayment.method : '-',
       reference: this.newPayment.status === 'Paid' ? ref : '-',
     };
-    this.payments.push(payment);
-    this.computeStats();
-    this.filterPayments();
+    this.data.addPayment(payment).subscribe(payments => {
+      this.payments = payments;
+      this.computeStats();
+      this.filterPayments();
+    });
     this.closeModal();
   }
 
@@ -96,11 +98,21 @@ export class PaymentsComponent implements OnInit {
     this.filterPayments();
   }
 
-  deletePayment(id?: number) {
-    if (id && confirm('Delete this payment record?')) {
-      this.payments = this.payments.filter(p => p.id !== id);
-      this.computeStats();
-      this.filterPayments();
+  async deletePayment(id?: number) {
+    if (!id) return;
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Delete Payment Record',
+      message: 'Are you sure you want to delete this payment record? This cannot be undone.',
+      confirmText: 'Yes, Delete',
+      cancelText: 'Cancel',
+      type: 'danger'
+    });
+    if (confirmed) {
+      this.data.deletePayment(id).subscribe(payments => {
+        this.payments = payments;
+        this.computeStats();
+        this.filterPayments();
+      });
     }
   }
 
