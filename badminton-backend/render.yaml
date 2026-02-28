@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: badminton-backend
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn badminton_backend.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.4
+      - key: DEBUG
+        value: "False"

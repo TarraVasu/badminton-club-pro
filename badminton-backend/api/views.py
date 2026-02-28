@@ -98,3 +98,7 @@ class ProfileView(APIView):
             return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class PingView(APIView):
+    def get(self, request):
+        return Response({'status': 'ok', 'message': 'pong'}, status=status.HTTP_200_OK)
