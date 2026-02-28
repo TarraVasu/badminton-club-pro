@@ -1,4 +1,25 @@
 <div class="dashboard px-4">
+    <!-- Live Match Ticker -->
+    <div class="live-ticker-container" *ngIf="liveMatches.length > 0">
+        <div class="ticker-label">LIVE NOW</div>
+        <div class="ticker-wrapper">
+            <div class="ticker-content">
+                <div class="ticker-item" *ngFor="let m of liveMatches">
+                    <span class="p1">{{ m.player1 }}</span>
+                    <span class="score">{{ m.score1 }} - {{ m.score2 }}</span>
+                    <span class="p2">{{ m.player2 }}</span>
+                    <span class="court">{{ m.court }}</span>
+                </div>
+                <!-- Duplicate for seamless loop -->
+                <div class="ticker-item" *ngFor="let m of liveMatches">
+                    <span class="p1">{{ m.player1 }}</span>
+                    <span class="score">{{ m.score1 }} - {{ m.score2 }}</span>
+                    <span class="p2">{{ m.player2 }}</span>
+                    <span class="court">{{ m.court }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="page-header animate-fade-in">
         <div *ngIf="userRole === 'Admin'">
             <h1>🏸 Admin Dashboard</h1>
@@ -181,15 +202,9 @@
             <div class="card-header">
                 <h3>📈 Match Activity (This Week)</h3>
             </div>
-            <div class="activity-bars">
-                <div class="activity-day" *ngFor="let day of weekActivity">
-                    <div class="bar-container">
-                        <div class="bar" [style.height.%]="day.pct" [style.background]="'var(--gradient-primary)'">
-                        </div>
-                    </div>
-                    <span class="day-label">{{ day.day }}</span>
-                    <span class="day-count">{{ day.count }}</span>
-                </div>
+            <div class="chart-container" style="height: 250px; position: relative;">
+                <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" type="line">
+                </canvas>
             </div>
         </div>
 
