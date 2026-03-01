@@ -3,6 +3,7 @@ import { DataService, Match } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { ScrollService } from '../../services/scroll.service';
 
 @Component({
   selector: 'app-matches',
@@ -14,6 +15,7 @@ export class MatchesComponent implements OnInit {
   filteredMatches: Match[] = [];
   liveMatch: Match | undefined;
   playerNames: string[] = [];
+  isLoading = false;
 
   showScheduleModal = false;
   showScoreModal = false;
@@ -26,15 +28,17 @@ export class MatchesComponent implements OnInit {
   get activeTab() { return this._activeTab; }
   set activeTab(val: string) { this._activeTab = val; this.filterMatches(); }
 
-  constructor(private data: DataService, public auth: AuthService, private router: Router, private confirmDialog: ConfirmDialogService) { }
+  constructor(private data: DataService, public auth: AuthService, private router: Router, private confirmDialog: ConfirmDialogService, private scroll: ScrollService) { }
 
   get userRole() { return this.auth.user.role; }
 
   ngOnInit() {
+    this.isLoading = true;
     this.data.getMatches().subscribe(matches => {
       this.matches = matches;
       this.liveMatch = this.matches.find(m => m.status === 'Live');
       this.filterMatches();
+      this.isLoading = false;
     });
     this.data.getPlayers().subscribe(players => {
       this.playerNames = players.map(p => p.name);
@@ -53,8 +57,8 @@ export class MatchesComponent implements OnInit {
     else this.filteredMatches = this.matches.filter(m => m.status.toLowerCase() === this._activeTab);
   }
 
-  openScheduleModal() { this.showScheduleModal = true; this.matchFormError = ''; this.newMatch = this.defaultMatch(); }
-  closeScheduleModal() { this.showScheduleModal = false; }
+  openScheduleModal() { this.showScheduleModal = true; this.matchFormError = ''; this.newMatch = this.defaultMatch(); this.scroll.disableScroll(); }
+  closeScheduleModal() { this.showScheduleModal = false; this.scroll.enableScroll(); }
 
   scheduleMatch() {
     this.matchFormError = '';
@@ -82,8 +86,8 @@ export class MatchesComponent implements OnInit {
     this.closeScheduleModal();
   }
 
-  openScoreModal(m: Match) { this.scoreMatch = { ...m }; this.showScoreModal = true; }
-  closeScoreModal() { this.showScoreModal = false; this.scoreMatch = null; }
+  openScoreModal(m: Match) { this.scoreMatch = { ...m }; this.showScoreModal = true; this.scroll.disableScroll(); }
+  closeScoreModal() { this.showScoreModal = false; this.scoreMatch = null; this.scroll.enableScroll(); }
 
   saveScore() {
     const idx = this.matches.findIndex(m => m.id === this.scoreMatch.id);

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService, Payment } from '../../services/data.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { ScrollService } from '../../services/scroll.service';
 
 @Component({
   selector: 'app-payments',
@@ -10,6 +11,7 @@ import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 export class PaymentsComponent implements OnInit {
   payments: Payment[] = [];
   filteredPayments: Payment[] = [];
+  isLoading = false;
   playerNames: string[] = [];
   statusFilter = '';
   showModal = false;
@@ -30,13 +32,15 @@ export class PaymentsComponent implements OnInit {
 
   newPayment: any = this.defaultPayment();
 
-  constructor(private data: DataService, private confirmDialog: ConfirmDialogService) { }
+  constructor(private data: DataService, private confirmDialog: ConfirmDialogService, private scroll: ScrollService) { }
 
   ngOnInit() {
+    this.isLoading = true;
     this.data.getPayments().subscribe(payments => {
       this.payments = payments;
       this.computeStats();
       this.filterPayments();
+      this.isLoading = false;
     });
     this.data.getPlayers().subscribe(players => {
       this.playerNames = players.map(p => p.name);
@@ -61,9 +65,9 @@ export class PaymentsComponent implements OnInit {
     this.filteredPayments = this.statusFilter ? this.payments.filter(p => p.status === this.statusFilter) : [...this.payments];
   }
 
-  openModal() { this.showModal = true; this.editMode = false; this.newPayment = this.defaultPayment(); this.formError = ''; }
+  openModal() { this.showModal = true; this.editMode = false; this.newPayment = this.defaultPayment(); this.formError = ''; this.scroll.disableScroll(); }
 
-  closeModal() { this.showModal = false; this.editingId = null; }
+  closeModal() { this.showModal = false; this.editingId = null; this.scroll.enableScroll(); }
 
   savePayment() {
     this.formError = '';

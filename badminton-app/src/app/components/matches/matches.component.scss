@@ -179,7 +179,6 @@
     }
 }
 
-/* ─── Form Modal Extras ─── */
 .modal-title-wrap {
     display: flex;
     align-items: center;
@@ -200,10 +199,6 @@
         font-size: 12px;
         color: var(--text-secondary);
     }
-}
-
-.modal-lg {
-    width: 600px;
 }
 
 .form-section-title {
@@ -375,10 +370,6 @@
 }
 
 @media (max-width: 600px) {
-    .modal-lg {
-        width: 100%;
-    }
-
     .players-vs-row {
         flex-direction: column;
         gap: 10px;

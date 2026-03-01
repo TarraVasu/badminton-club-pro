@@ -78,6 +78,67 @@ body {
   color: var(--text-primary);
   font-size: 14px;
   line-height: 1.6;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Global scroll disable & containing block fix */
+html.modal-open,
+html.modal-open body {
+  overflow: hidden !important;
+}
+
+/* ☢️ NUCLEAR RESET: Completely neutralize all potential stacking contexts in the app tree.
+   This forces 'position: fixed' elements to break out of all parent containers. */
+html.modal-open {
+  body {
+    overflow: hidden !important;
+  }
+
+  /* Target all primary layout containers */
+  .app-container,
+  .main-content,
+  .page-content,
+  .page-content>*,
+  app-players,
+  app-matches,
+  app-sessions,
+  app-payments,
+  app-dashboard,
+  app-leaderboard {
+    position: static !important;
+    /* BREAK STACKING CONTEXT TRAP */
+    transform: none !important;
+    perspective: none !important;
+    filter: none !important;
+    contain: none !important;
+    will-change: auto !important;
+    backdrop-filter: none !important;
+    mask: none !important;
+    clip-path: none !important;
+    isolation: auto !important;
+  }
+
+  /* When modal is open on desktop, we disable the sidebar width influence to ensure absolute 100vw centering */
+  @media (min-width: 769px) {
+    app-sidebar {
+      display: none !important;
+    }
+
+    .main-content {
+      margin-left: 0 !important;
+      width: 100% !important;
+      padding-left: 0 !important;
+      left: 0 !important;
+    }
+  }
+}
+
+/* Only lock page-content scroll on desktop where it's the scroll container */
+@media (min-width: 769px) {
+  html.modal-open .page-content {
+    overflow-y: hidden !important;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -666,7 +727,8 @@ body {
   &.btn-outline {
     background: transparent;
     border: 1px solid var(--border);
-    color: var(--text-secondary);
+    color: var(--text-primary);
+    /* Darker/More contrast than text-secondary */
 
     &:hover {
       border-color: var(--primary);
@@ -1108,14 +1170,22 @@ body {
 
 /* MODAL */
 .modal-overlay {
-  position: fixed;
-  inset: 0;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(8px);
-  z-index: 1000;
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999 !important;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 40px 24px;
+  /* Ensure modal never touches the viewport edges */
   animation: fadeIn 0.2s ease;
 }
 
@@ -1123,55 +1193,97 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 28px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+  padding: 0;
+  position: relative;
   width: 480px;
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 95vw;
+  max-height: 80vh;
+  /* Reduced from 90vh to ensure it doesn't feel cramped on laptops */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-lg {
+  width: 600px;
+}
+
+.modal-body {
+  flex: 1;
   overflow-y: auto;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
-  animation: slideUp 0.3s ease;
+  padding: 10px 32px 30px;
+  /* Increased side padding and bottom padding */
+  overscroll-behavior: contain;
+  /* Removed negative margin that was causing content to touch the edges */
 
-  .modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-
-    h3 {
-      font-family: 'Poppins', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .close-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--bg-card2);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: var(--transition);
-
-      &:hover {
-        border-color: var(--danger);
-        color: var(--danger);
-      }
-    }
+  &::-webkit-scrollbar {
+    width: 4px;
   }
 
-  .modal-footer {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 212, 170, 0.35);
+    border-radius: 4px;
   }
 }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 32px 20px;
+  /* Aligned with body padding */
+  flex-shrink: 0;
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+
+    &:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+  }
+}
+
+.modal-footer {
+  display: flex;
+  gap: 16px;
+  /* Slightly more gap */
+  justify-content: flex-end;
+  padding: 20px 32px 28px;
+  /* Aligned with body padding, more bottom padding */
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg-card);
+  /* Ensure footer background is solid */
+
+  .btn {
+    min-width: 120px;
+    /* Ensure buttons have a substantial feel */
+  }
+}
+
 
 /* ANIMATIONS */
 @keyframes fadeIn {
@@ -1353,9 +1465,9 @@ body {
    ============================================= */
 @media (max-width: 768px) {
 
-  /* Allow body/html to scroll on mobile */
-  html,
-  body {
+  /* Allow body/html to scroll on mobile unless a modal is open */
+  html:not(.modal-open),
+  body:not(.modal-open) {
     overflow: auto;
   }
 
@@ -1480,23 +1592,48 @@ body {
     }
   }
 
-  /* Modal: full-width bottom sheet style */
+  /* Modal: Fixed Top-Aligned Layout for mobile for easier access */
   .modal-overlay {
-    align-items: flex-end;
+    align-items: flex-start !important;
+    /* Shifting up from center */
+    justify-content: center !important;
+    padding: 20px 12px !important;
+    /* Added more top padding */
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
   }
 
   .modal {
-    width: 100%;
-    max-width: 100%;
-    border-radius: var(--radius) var(--radius) 0 0;
-    max-height: 90vh;
-    padding: 20px 16px;
-    animation: slideUpMobile 0.3s ease;
+    width: 100% !important;
+    max-width: 480px !important;
+    border-radius: var(--radius) !important;
+    max-height: 85vh !important;
+    margin: 0 !important;
+    animation: slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .modal-lg {
+    width: 100% !important;
   }
 
   /* Form grid: single col in modal */
-  .modal .grid-2 {
-    grid-template-columns: 1fr;
+  .modal .grid-2,
+  .modal .grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@keyframes slideUpMobile {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 

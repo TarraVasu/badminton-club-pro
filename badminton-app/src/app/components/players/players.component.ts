@@ -3,6 +3,7 @@ import { DataService, Player } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { ScrollService } from '../../services/scroll.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -20,6 +21,7 @@ export class PlayersComponent implements OnInit {
   editMode = false;
   formError = '';
   selectedColorIdx = 0;
+  isLoading = false;
 
   colorOptions = [
     'linear-gradient(135deg,#00d4aa,#6c63ff)',
@@ -44,14 +46,16 @@ export class PlayersComponent implements OnInit {
   selectedFile: File | null = null;
   imagePreview: string | ArrayBuffer | null = null;
 
-  constructor(private data: DataService, public auth: AuthService, private toast: ToastService, private confirmDialog: ConfirmDialogService) { }
+  constructor(private data: DataService, public auth: AuthService, private toast: ToastService, private confirmDialog: ConfirmDialogService, private scroll: ScrollService) { }
 
   get userRole() { return this.auth.user.role; }
 
   ngOnInit() {
+    this.isLoading = true;
     this.data.getPlayers().subscribe(players => {
       this.players = players;
       this.filteredPlayers = [...this.players];
+      this.isLoading = false;
     });
   }
 
@@ -89,7 +93,7 @@ export class PlayersComponent implements OnInit {
 
   setFilter(level: string) { this.levelFilter = level; this.filterPlayers(); }
 
-  openModal() { this.showModal = true; this.editMode = false; this.newPlayer = this.defaultPlayer(); this.formError = ''; this.selectedFile = null; this.imagePreview = null; }
+  openModal() { this.showModal = true; this.editMode = false; this.newPlayer = this.defaultPlayer(); this.formError = ''; this.selectedFile = null; this.imagePreview = null; this.scroll.disableScroll(); }
   openEditModal(p: Player) {
     this.editMode = true;
     this.showModal = true;
@@ -98,8 +102,9 @@ export class PlayersComponent implements OnInit {
     this.formError = '';
     this.selectedFile = null;
     this.imagePreview = p.image || null;
+    this.scroll.disableScroll();
   }
-  closeModal() { this.showModal = false; this.editingId = null; this.selectedFile = null; this.imagePreview = null; }
+  closeModal() { this.showModal = false; this.editingId = null; this.selectedFile = null; this.imagePreview = null; this.scroll.enableScroll(); }
 
   savePlayer() {
     this.formError = '';

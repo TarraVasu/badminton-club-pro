@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { ScrollService } from './scroll.service';
 
 export interface ConfirmDialogOptions {
     title: string;
@@ -16,6 +17,7 @@ export interface ConfirmDialogState extends ConfirmDialogOptions {
 
 @Injectable({ providedIn: 'root' })
 export class ConfirmDialogService {
+    constructor(private scroll: ScrollService) { }
     state: ConfirmDialogState = {
         visible: false,
         title: '',
@@ -26,6 +28,7 @@ export class ConfirmDialogService {
     };
 
     confirm(options: ConfirmDialogOptions): Promise<boolean> {
+        this.scroll.disableScroll();
         return new Promise((resolve) => {
             this.state = {
                 ...options,
@@ -43,5 +46,6 @@ export class ConfirmDialogService {
             this.state.resolve(result);
         }
         this.state = { ...this.state, visible: false };
+        this.scroll.enableScroll();
     }
 }

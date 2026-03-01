@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgChartsModule } from 'ng2-charts';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -19,6 +20,7 @@ import { LoginComponent } from './components/login/login.component';
 import { LoaderComponent } from './components/loader/loader.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { LoadingStateComponent } from './components/shared/loading-state/loading-state.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     LoaderComponent,
     ProfileComponent,
     ConfirmDialogComponent,
+    LoadingStateComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,6 +46,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     CommonModule,
     HttpClientModule,
     NgChartsModule,
+    BrowserAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

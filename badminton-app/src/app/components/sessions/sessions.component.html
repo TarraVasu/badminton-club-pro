@@ -87,12 +87,10 @@
             </div>
         </div>
     </div>
-    <div class="empty-state" *ngIf="sessions.length === 0">
-        <div class="empty-icon">📅</div>
-        <h3>No sessions found</h3>
-        <p *ngIf="userRole === 'Admin'">Create a new training, practice, or tournament session to see it here.</p>
-        <p *ngIf="userRole === 'Player'">Check back later for upcoming club sessions and tournaments.</p>
-    </div>
+    <app-loading-state *ngIf="sessions.length === 0" [isLoading]="isLoading" emptyIcon="📅"
+        emptyTitle="No sessions found"
+        [emptyMessage]="userRole === 'Admin' ? 'Create a new training, practice, or tournament session to see it here.' : 'Check back later for upcoming club sessions and tournaments.'">
+    </app-loading-state>
 </div>
 
 <!-- ═══ ADD / EDIT SESSION MODAL ═══ -->
@@ -110,72 +108,74 @@
             <button class="close-btn" (click)="closeModal()">✕</button>
         </div>
 
-        <div class="form-section-title">Session Info</div>
-        <div class="form-group">
-            <label>Session Title *</label>
-            <input type="text" [(ngModel)]="newSession.title" placeholder="e.g. Morning Drills, Beginner Basics...">
-        </div>
-        <div class="grid-2">
+        <div class="modal-body">
+            <div class="form-section-title">Session Info</div>
             <div class="form-group">
-                <label>Session Type *</label>
-                <select [(ngModel)]="newSession.type">
-                    <option value="">Select Type</option>
-                    <option value="Training">🎯 Training</option>
-                    <option value="Practice">🏸 Practice</option>
-                    <option value="Tournament">🏆 Tournament</option>
-                    <option value="Friendly">🤝 Friendly</option>
-                </select>
+                <label>Session Title *</label>
+                <input type="text" [(ngModel)]="newSession.title" placeholder="e.g. Morning Drills, Beginner Basics...">
             </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select [(ngModel)]="newSession.status">
-                    <option value="Upcoming">Upcoming</option>
-                    <option value="Ongoing">Ongoing</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Session Type *</label>
+                    <select [(ngModel)]="newSession.type">
+                        <option value="">Select Type</option>
+                        <option value="Training">🎯 Training</option>
+                        <option value="Practice">🏸 Practice</option>
+                        <option value="Tournament">🏆 Tournament</option>
+                        <option value="Friendly">🤝 Friendly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select [(ngModel)]="newSession.status">
+                        <option value="Upcoming">Upcoming</option>
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
             </div>
-        </div>
 
-        <div class="form-section-title">Schedule</div>
-        <div class="grid-3">
-            <div class="form-group">
-                <label>Date *</label>
-                <input type="date" [(ngModel)]="newSession.date">
+            <div class="form-section-title">Schedule</div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" [(ngModel)]="newSession.date">
+                </div>
+                <div class="form-group">
+                    <label>Start Time *</label>
+                    <input type="time" [(ngModel)]="newSession.time">
+                </div>
+                <div class="form-group">
+                    <label>Court *</label>
+                    <select [(ngModel)]="newSession.court">
+                        <option value="">Select Court</option>
+                        <option value="Court A">Court A</option>
+                        <option value="Court B">Court B</option>
+                        <option value="Court C">Court C</option>
+                        <option value="All Courts">All Courts</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Start Time *</label>
-                <input type="time" [(ngModel)]="newSession.time">
-            </div>
-            <div class="form-group">
-                <label>Court *</label>
-                <select [(ngModel)]="newSession.court">
-                    <option value="">Select Court</option>
-                    <option value="Court A">Court A</option>
-                    <option value="Court B">Court B</option>
-                    <option value="Court C">Court C</option>
-                    <option value="All Courts">All Courts</option>
-                </select>
-            </div>
-        </div>
 
-        <div class="form-section-title">Capacity & Fee</div>
-        <div class="grid-3">
-            <div class="form-group">
-                <label>Coach / Trainer</label>
-                <input type="text" [(ngModel)]="newSession.coach" placeholder="e.g. Coach Rajan">
+            <div class="form-section-title">Capacity & Fee</div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Coach / Trainer</label>
+                    <input type="text" [(ngModel)]="newSession.coach" placeholder="e.g. Coach Rajan">
+                </div>
+                <div class="form-group">
+                    <label>Max Players</label>
+                    <input type="number" [(ngModel)]="newSession.maxPlayers" min="1" max="50">
+                </div>
+                <div class="form-group">
+                    <label>Session Fee (₹)</label>
+                    <input type="number" [(ngModel)]="newSession.fee" min="0" placeholder="0">
+                </div>
             </div>
-            <div class="form-group">
-                <label>Max Players</label>
-                <input type="number" [(ngModel)]="newSession.maxPlayers" min="1" max="50">
-            </div>
-            <div class="form-group">
-                <label>Session Fee (₹)</label>
-                <input type="number" [(ngModel)]="newSession.fee" min="0" placeholder="0">
-            </div>
-        </div>
 
-        <div class="form-error" *ngIf="formError">⚠️ {{ formError }}</div>
+            <div class="form-error" *ngIf="formError">⚠️ {{ formError }}</div>
+        </div><!-- /.modal-body -->
         <div class="modal-footer">
             <button class="btn btn-outline" (click)="closeModal()">Cancel</button>
             <button class="btn btn-primary" (click)="saveSession()">
@@ -183,4 +183,3 @@
             </button>
         </div>
     </div>
-</div>

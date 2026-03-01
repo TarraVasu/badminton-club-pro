@@ -94,11 +94,9 @@
                 </tr>
             </tbody>
         </table>
-        <div class="empty-state" *ngIf="filteredMatches.length === 0">
-            <div class="empty-icon">🏸</div>
-            <h3>No matches found</h3>
-            <p>Try adjusting your tabs or schedule a new match.</p>
-        </div>
+        <app-loading-state *ngIf="filteredMatches.length === 0" [isLoading]="isLoading" emptyIcon="🏸"
+            emptyTitle="No matches found" emptyMessage="Try adjusting your tabs or schedule a new match.">
+        </app-loading-state>
     </div>
 </div>
 
@@ -116,60 +114,62 @@
             <button class="close-btn" (click)="closeScheduleModal()">✕</button>
         </div>
 
-        <div class="players-vs-row">
-            <div class="vs-player">
-                <label>Player 1 *</label>
-                <select [(ngModel)]="newMatch.player1">
-                    <option value="">Select Player</option>
-                    <option *ngFor="let p of playerNames" [value]="p">{{ p }}</option>
-                </select>
+        <div class="modal-body">
+            <div class="players-vs-row">
+                <div class="vs-player">
+                    <label>Player 1 *</label>
+                    <select [(ngModel)]="newMatch.player1">
+                        <option value="">Select Player</option>
+                        <option *ngFor="let p of playerNames" [value]="p">{{ p }}</option>
+                    </select>
+                </div>
+                <div class="vs-badge">VS</div>
+                <div class="vs-player">
+                    <label>Player 2 *</label>
+                    <select [(ngModel)]="newMatch.player2">
+                        <option value="">Select Player</option>
+                        <option *ngFor="let p of playerNames" [value]="p">{{ p }}</option>
+                    </select>
+                </div>
             </div>
-            <div class="vs-badge">VS</div>
-            <div class="vs-player">
-                <label>Player 2 *</label>
-                <select [(ngModel)]="newMatch.player2">
-                    <option value="">Select Player</option>
-                    <option *ngFor="let p of playerNames" [value]="p">{{ p }}</option>
-                </select>
-            </div>
-        </div>
 
-        <div class="form-section-title">Match Details</div>
-        <div class="grid-2">
-            <div class="form-group">
-                <label>Match Date *</label>
-                <input type="date" [(ngModel)]="newMatch.date">
+            <div class="form-section-title">Match Details</div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Match Date *</label>
+                    <input type="date" [(ngModel)]="newMatch.date">
+                </div>
+                <div class="form-group">
+                    <label>Match Time</label>
+                    <input type="time" [(ngModel)]="newMatch.time">
+                </div>
+                <div class="form-group">
+                    <label>Court *</label>
+                    <select [(ngModel)]="newMatch.court">
+                        <option value="">Select Court</option>
+                        <option value="Court A">Court A</option>
+                        <option value="Court B">Court B</option>
+                        <option value="Court C">Court C</option>
+                        <option value="Court D">Court D</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Match Type</label>
+                    <select [(ngModel)]="newMatch.type">
+                        <option value="Singles">Singles</option>
+                        <option value="Doubles">Doubles</option>
+                        <option value="Mixed Doubles">Mixed Doubles</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group">
-                <label>Match Time</label>
-                <input type="time" [(ngModel)]="newMatch.time">
+                <label>Notes / Instructions</label>
+                <textarea [(ngModel)]="newMatch.notes" rows="2"
+                    placeholder="Any special instructions or notes for this match..."></textarea>
             </div>
-            <div class="form-group">
-                <label>Court *</label>
-                <select [(ngModel)]="newMatch.court">
-                    <option value="">Select Court</option>
-                    <option value="Court A">Court A</option>
-                    <option value="Court B">Court B</option>
-                    <option value="Court C">Court C</option>
-                    <option value="Court D">Court D</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Match Type</label>
-                <select [(ngModel)]="newMatch.type">
-                    <option value="Singles">Singles</option>
-                    <option value="Doubles">Doubles</option>
-                    <option value="Mixed Doubles">Mixed Doubles</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Notes / Instructions</label>
-            <textarea [(ngModel)]="newMatch.notes" rows="2"
-                placeholder="Any special instructions or notes for this match..."></textarea>
-        </div>
 
-        <div class="form-error" *ngIf="matchFormError">⚠️ {{ matchFormError }}</div>
+            <div class="form-error" *ngIf="matchFormError">⚠️ {{ matchFormError }}</div>
+        </div><!-- /.modal-body -->
         <div class="modal-footer">
             <button class="btn btn-outline" (click)="closeScheduleModal()">Cancel</button>
             <button class="btn btn-primary" (click)="scheduleMatch()">📅 Schedule Match</button>
@@ -191,29 +191,31 @@
             <button class="close-btn" (click)="closeScoreModal()">✕</button>
         </div>
 
-        <div class="score-entry">
-            <div class="score-player">
-                <p class="score-player-name">{{ scoreMatch.player1 }}</p>
-                <input type="number" class="score-input" [(ngModel)]="scoreMatch.score1" min="0" max="30">
+        <div class="modal-body">
+            <div class="score-entry">
+                <div class="score-player">
+                    <p class="score-player-name">{{ scoreMatch.player1 }}</p>
+                    <input type="number" class="score-input" [(ngModel)]="scoreMatch.score1" min="0" max="30">
+                </div>
+                <div class="score-divider">—</div>
+                <div class="score-player">
+                    <p class="score-player-name">{{ scoreMatch.player2 }}</p>
+                    <input type="number" class="score-input" [(ngModel)]="scoreMatch.score2" min="0" max="30">
+                </div>
             </div>
-            <div class="score-divider">—</div>
-            <div class="score-player">
-                <p class="score-player-name">{{ scoreMatch.player2 }}</p>
-                <input type="number" class="score-input" [(ngModel)]="scoreMatch.score2" min="0" max="30">
-            </div>
-        </div>
 
-        <div class="form-group" style="margin-top:16px">
-            <label>Duration</label>
-            <input type="text" [(ngModel)]="scoreMatch.duration" placeholder="e.g. 45 min">
-        </div>
-        <div class="form-group">
-            <label>Status</label>
-            <select [(ngModel)]="scoreMatch.status">
-                <option value="Live">Live</option>
-                <option value="Completed">Completed</option>
-            </select>
-        </div>
+            <div class="form-group" style="margin-top:16px">
+                <label>Duration</label>
+                <input type="text" [(ngModel)]="scoreMatch.duration" placeholder="e.g. 45 min">
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select [(ngModel)]="scoreMatch.status">
+                    <option value="Live">Live</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+        </div><!-- /.modal-body -->
 
         <div class="modal-footer">
             <button class="btn btn-outline" (click)="closeScoreModal()">Cancel</button>

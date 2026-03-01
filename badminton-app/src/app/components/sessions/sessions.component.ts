@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService, Session } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { ScrollService } from '../../services/scroll.service';
 
 @Component({
   selector: 'app-sessions',
@@ -10,6 +11,7 @@ import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 })
 export class SessionsComponent implements OnInit {
   sessions: Session[] = [];
+  isLoading = false;
   showModal = false;
   editMode = false;
   formError = '';
@@ -17,12 +19,14 @@ export class SessionsComponent implements OnInit {
 
   newSession: any = this.defaultSession();
 
-  constructor(private data: DataService, public auth: AuthService, private confirmDialog: ConfirmDialogService) { }
+  constructor(private data: DataService, public auth: AuthService, private confirmDialog: ConfirmDialogService, private scroll: ScrollService) { }
 
   get userRole() { return this.auth.user.role; }
   ngOnInit() {
+    this.isLoading = true;
     this.data.getSessions().subscribe(sessions => {
       this.sessions = sessions;
+      this.isLoading = false;
     });
   }
 
@@ -35,7 +39,7 @@ export class SessionsComponent implements OnInit {
     };
   }
 
-  openModal() { this.showModal = true; this.editMode = false; this.newSession = this.defaultSession(); this.formError = ''; }
+  openModal() { this.showModal = true; this.editMode = false; this.newSession = this.defaultSession(); this.formError = ''; this.scroll.disableScroll(); }
 
   openEditModal(s: Session) {
     this.editMode = true;
@@ -43,9 +47,10 @@ export class SessionsComponent implements OnInit {
     this.editingId = s.id;
     this.newSession = { ...s };
     this.formError = '';
+    this.scroll.disableScroll();
   }
 
-  closeModal() { this.showModal = false; this.editingId = null; }
+  closeModal() { this.showModal = false; this.editingId = null; this.scroll.enableScroll(); }
 
   saveSession() {
     this.formError = '';

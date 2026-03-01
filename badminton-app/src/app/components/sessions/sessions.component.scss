@@ -1,7 +1,5 @@
 /* ─── Modal & Form Shared ─── */
-.modal-lg {
-    width: 600px;
-}
+
 
 .modal-title-wrap {
     display: flex;
@@ -90,10 +88,6 @@
 }
 
 @media (max-width: 600px) {
-    .modal-lg {
-        width: 100%;
-    }
-
     .grid-3 {
         grid-template-columns: 1fr;
     }
