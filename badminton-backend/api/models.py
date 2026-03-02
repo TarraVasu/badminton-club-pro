@@ -14,6 +14,7 @@ class Player(models.Model):
     avatar = models.CharField(max_length=10)
     joinDate = models.DateField()
     matchesPlayed = models.IntegerField(default=0)
+    jerseyNumber = models.CharField(max_length=10, null=True, blank=True)
     image = models.ImageField(upload_to='player_pics/', null=True, blank=True)
 
     def __str__(self):

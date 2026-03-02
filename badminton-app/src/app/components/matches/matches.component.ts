@@ -3,7 +3,9 @@ import { DataService, Match } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
-import { ScrollService } from '../../services/scroll.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ScheduleMatchDialogComponent } from './schedule-match-dialog/schedule-match-dialog.component';
+import { ScoreMatchDialogComponent } from './score-match-dialog/score-match-dialog.component';
 
 @Component({
   selector: 'app-matches',
@@ -17,18 +19,17 @@ export class MatchesComponent implements OnInit {
   playerNames: string[] = [];
   isLoading = false;
 
-  showScheduleModal = false;
-  showScoreModal = false;
-  matchFormError = '';
-  scoreMatch: any = null;
-
-  newMatch: any = this.defaultMatch();
-
   private _activeTab = 'all';
   get activeTab() { return this._activeTab; }
   set activeTab(val: string) { this._activeTab = val; this.filterMatches(); }
 
-  constructor(private data: DataService, public auth: AuthService, private router: Router, private confirmDialog: ConfirmDialogService, private scroll: ScrollService) { }
+  constructor(
+    private data: DataService,
+    public auth: AuthService,
+    private router: Router,
+    private confirmDialog: ConfirmDialogService,
+    private dialog: MatDialog
+  ) { }
 
   get userRole() { return this.auth.user.role; }
 
@@ -57,52 +58,49 @@ export class MatchesComponent implements OnInit {
     else this.filteredMatches = this.matches.filter(m => m.status.toLowerCase() === this._activeTab);
   }
 
-  openScheduleModal() { this.showScheduleModal = true; this.matchFormError = ''; this.newMatch = this.defaultMatch(); this.scroll.disableScroll(); }
-  closeScheduleModal() { this.showScheduleModal = false; this.scroll.enableScroll(); }
-
-  scheduleMatch() {
-    this.matchFormError = '';
-    if (!this.newMatch.player1) { this.matchFormError = 'Please select Player 1.'; return; }
-    if (!this.newMatch.player2) { this.matchFormError = 'Please select Player 2.'; return; }
-    if (this.newMatch.player1 === this.newMatch.player2) { this.matchFormError = 'Players cannot be the same.'; return; }
-    if (!this.newMatch.date) { this.matchFormError = 'Match date is required.'; return; }
-    if (!this.newMatch.court) { this.matchFormError = 'Please select a court.'; return; }
-
-    const m: Omit<Match, 'id'> = {
-      player1: this.newMatch.player1,
-      player2: this.newMatch.player2,
-      score1: 0, score2: 0,
-      date: this.newMatch.date,
-      court: this.newMatch.court,
-      type: this.newMatch.type,
-      status: 'Scheduled',
-      winner: '-',
-      duration: '-'
-    };
-    this.data.addMatch(m).subscribe(matches => {
-      this.matches = matches;
-      this.filterMatches();
+  openScheduleModal() {
+    const dialogRef = this.dialog.open(ScheduleMatchDialogComponent, {
+      width: '580px',
+      panelClass: 'custom-dialog-container',
+      data: { match: this.defaultMatch(), playerNames: this.playerNames }
     });
-    this.closeScheduleModal();
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const m: Omit<Match, 'id'> = {
+          player1: result.player1, player2: result.player2,
+          score1: 0, score2: 0, date: result.date, court: result.court,
+          type: result.type, status: 'Scheduled', winner: '-', duration: '-'
+        };
+        this.data.addMatch(m).subscribe(matches => {
+          this.matches = matches;
+          this.filterMatches();
+        });
+      }
+    });
   }
 
-  openScoreModal(m: Match) { this.scoreMatch = { ...m }; this.showScoreModal = true; this.scroll.disableScroll(); }
-  closeScoreModal() { this.showScoreModal = false; this.scoreMatch = null; this.scroll.enableScroll(); }
-
-  saveScore() {
-    const idx = this.matches.findIndex(m => m.id === this.scoreMatch.id);
-    if (idx !== -1) {
-      const m = this.matches[idx];
-      m.score1 = this.scoreMatch.score1;
-      m.score2 = this.scoreMatch.score2;
-      m.duration = this.scoreMatch.duration;
-      m.status = this.scoreMatch.status;
-      if (m.status === 'Completed') {
-        m.winner = m.score1 > m.score2 ? m.player1 : m.player2;
+  openScoreModal(m: Match) {
+    const dialogRef = this.dialog.open(ScoreMatchDialogComponent, {
+      width: '420px',
+      panelClass: 'custom-dialog-container',
+      data: { match: m }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const idx = this.matches.findIndex(x => x.id === result.id);
+        if (idx !== -1) {
+          const match = this.matches[idx];
+          match.score1 = result.score1;
+          match.score2 = result.score2;
+          match.duration = result.duration;
+          match.status = result.status;
+          if (match.status === 'Completed') {
+            match.winner = match.score1 > match.score2 ? match.player1 : match.player2;
+          }
+        }
+        this.filterMatches();
       }
-    }
-    this.filterMatches();
-    this.closeScoreModal();
+    });
   }
 
   async deleteMatch(id?: number) {
@@ -134,3 +132,4 @@ export class MatchesComponent implements OnInit {
     this.router.navigate(['/']);
   }
 }
+

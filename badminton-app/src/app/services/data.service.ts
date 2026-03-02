@@ -19,6 +19,7 @@ export interface Player {
   avatar: string;
   joinDate: string;
   matchesPlayed: number;
+  jerseyNumber?: string;
   image?: string;
 }
 

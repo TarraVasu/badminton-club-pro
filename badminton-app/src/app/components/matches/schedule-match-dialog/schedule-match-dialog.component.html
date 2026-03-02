@@ -1,0 +1,72 @@
+<div class="modal-header">
+    <div class="modal-title-wrap">
+        <div class="modal-icon">🏸</div>
+        <div>
+            <h3>Schedule a Match</h3>
+            <p class="modal-subtitle">Set up a new match between players</p>
+        </div>
+    </div>
+    <button class="close-btn" (click)="onCancel()">✕</button>
+</div>
+
+<div class="modal-body">
+    <div class="players-vs-row">
+        <div class="vs-player">
+            <label>Player 1 *</label>
+            <select [(ngModel)]="match.player1">
+                <option value="">Select Player</option>
+                <option *ngFor="let p of playerNames" [value]="p">{{ p }}</option>
+            </select>
+        </div>
+        <div class="vs-badge">VS</div>
+        <div class="vs-player">
+            <label>Player 2 *</label>
+            <select [(ngModel)]="match.player2">
+                <option value="">Select Player</option>
+                <option *ngFor="let p of playerNames" [value]="p">{{ p }}</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-section-title">Match Details</div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Match Date *</label>
+            <input type="date" [(ngModel)]="match.date">
+        </div>
+        <div class="form-group">
+            <label>Match Time</label>
+            <input type="time" [(ngModel)]="match.time">
+        </div>
+        <div class="form-group">
+            <label>Court *</label>
+            <select [(ngModel)]="match.court">
+                <option value="">Select Court</option>
+                <option value="Court A">Court A</option>
+                <option value="Court B">Court B</option>
+                <option value="Court C">Court C</option>
+                <option value="Court D">Court D</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Match Type</label>
+            <select [(ngModel)]="match.type">
+                <option value="Singles">Singles</option>
+                <option value="Doubles">Doubles</option>
+                <option value="Mixed Doubles">Mixed Doubles</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Notes / Instructions</label>
+        <textarea [(ngModel)]="match.notes" rows="2"
+            placeholder="Any special instructions or notes for this match..."></textarea>
+    </div>
+
+    <div class="form-error" *ngIf="formError">⚠️ {{ formError }}</div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-outline" (click)="onCancel()">Cancel</button>
+    <button class="btn btn-primary" (click)="onSave()">📅 Schedule Match</button>
+</div>

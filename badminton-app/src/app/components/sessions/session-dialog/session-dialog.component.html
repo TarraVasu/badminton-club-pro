@@ -1,0 +1,87 @@
+<div class="modal-header">
+    <div class="modal-title-wrap">
+        <div class="modal-icon">{{ editMode ? '✏️' : '📅' }}</div>
+        <div>
+            <h3>{{ editMode ? 'Edit Session' : 'Create New Session' }}</h3>
+            <p class="modal-subtitle">{{ editMode ? 'Update session details' : 'Schedule a training or practice session'
+                }}</p>
+        </div>
+    </div>
+    <button class="close-btn" (click)="onCancel()">✕</button>
+</div>
+
+<div class="modal-body">
+    <div class="form-section-title">Session Info</div>
+    <div class="form-group">
+        <label>Session Title *</label>
+        <input type="text" [(ngModel)]="session.title" placeholder="e.g. Morning Drills, Beginner Basics...">
+    </div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Session Type *</label>
+            <select [(ngModel)]="session.type">
+                <option value="">Select Type</option>
+                <option value="Training">🎯 Training</option>
+                <option value="Practice">🏸 Practice</option>
+                <option value="Tournament">🏆 Tournament</option>
+                <option value="Friendly">🤝 Friendly</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select [(ngModel)]="session.status">
+                <option value="Upcoming">Upcoming</option>
+                <option value="Ongoing">Ongoing</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-section-title">Schedule</div>
+    <div class="grid-3">
+        <div class="form-group">
+            <label>Date *</label>
+            <input type="date" [(ngModel)]="session.date">
+        </div>
+        <div class="form-group">
+            <label>Start Time *</label>
+            <input type="time" [(ngModel)]="session.time">
+        </div>
+        <div class="form-group">
+            <label>Court *</label>
+            <select [(ngModel)]="session.court">
+                <option value="">Select Court</option>
+                <option value="Court A">Court A</option>
+                <option value="Court B">Court B</option>
+                <option value="Court C">Court C</option>
+                <option value="All Courts">All Courts</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-section-title">Capacity & Fee</div>
+    <div class="grid-3">
+        <div class="form-group">
+            <label>Coach / Trainer</label>
+            <input type="text" [(ngModel)]="session.coach" placeholder="e.g. Coach Rajan">
+        </div>
+        <div class="form-group">
+            <label>Max Players</label>
+            <input type="number" [(ngModel)]="session.maxPlayers" min="1" max="50">
+        </div>
+        <div class="form-group">
+            <label>Session Fee (₹)</label>
+            <input type="number" [(ngModel)]="session.fee" min="0" placeholder="0">
+        </div>
+    </div>
+
+    <div class="form-error" *ngIf="formError">⚠️ {{ formError }}</div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-outline" (click)="onCancel()">Cancel</button>
+    <button class="btn btn-primary" (click)="onSave()">
+        {{ editMode ? '💾 Save Changes' : '✅ Create Session' }}
+    </button>
+</div>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { ScrollService } from './scroll.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
+import { firstValueFrom } from 'rxjs';
 
 export interface ConfirmDialogOptions {
     title: string;
@@ -10,42 +11,18 @@ export interface ConfirmDialogOptions {
     type?: 'danger' | 'warning' | 'info';
 }
 
-export interface ConfirmDialogState extends ConfirmDialogOptions {
-    visible: boolean;
-    resolve?: (value: boolean) => void;
-}
-
 @Injectable({ providedIn: 'root' })
 export class ConfirmDialogService {
-    constructor(private scroll: ScrollService) { }
-    state: ConfirmDialogState = {
-        visible: false,
-        title: '',
-        message: '',
-        confirmText: 'Confirm',
-        cancelText: 'Cancel',
-        type: 'danger'
-    };
+    constructor(private dialog: MatDialog) { }
 
-    confirm(options: ConfirmDialogOptions): Promise<boolean> {
-        this.scroll.disableScroll();
-        return new Promise((resolve) => {
-            this.state = {
-                ...options,
-                confirmText: options.confirmText || 'Confirm',
-                cancelText: options.cancelText || 'Cancel',
-                type: options.type || 'danger',
-                visible: true,
-                resolve
-            };
+    async confirm(options: ConfirmDialogOptions): Promise<boolean> {
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+            width: '420px',
+            data: options,
+            panelClass: 'confirm-dialog-panel'
         });
-    }
 
-    close(result: boolean) {
-        if (this.state.resolve) {
-            this.state.resolve(result);
-        }
-        this.state = { ...this.state, visible: false };
-        this.scroll.enableScroll();
+        return await firstValueFrom(dialogRef.afterClosed()) || false;
     }
 }
+

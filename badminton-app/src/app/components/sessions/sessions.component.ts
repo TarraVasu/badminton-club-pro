@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { DataService, Session } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
-import { ScrollService } from '../../services/scroll.service';
+import { MatDialog } from '@angular/material/dialog';
+import { SessionDialogComponent } from './session-dialog/session-dialog.component';
 
 @Component({
   selector: 'app-sessions',
@@ -12,16 +13,16 @@ import { ScrollService } from '../../services/scroll.service';
 export class SessionsComponent implements OnInit {
   sessions: Session[] = [];
   isLoading = false;
-  showModal = false;
-  editMode = false;
-  formError = '';
-  editingId?: number | null = null;
 
-  newSession: any = this.defaultSession();
-
-  constructor(private data: DataService, public auth: AuthService, private confirmDialog: ConfirmDialogService, private scroll: ScrollService) { }
+  constructor(
+    private data: DataService,
+    public auth: AuthService,
+    private confirmDialog: ConfirmDialogService,
+    private dialog: MatDialog
+  ) { }
 
   get userRole() { return this.auth.user.role; }
+
   ngOnInit() {
     this.isLoading = true;
     this.data.getSessions().subscribe(sessions => {
@@ -34,41 +35,35 @@ export class SessionsComponent implements OnInit {
     return {
       title: '', type: '', status: 'Upcoming',
       date: new Date().toISOString().split('T')[0],
-      time: '06:00 AM', court: '', coach: '',
+      time: '06:00', court: '', coach: '',
       players: 0, maxPlayers: 10, fee: 500
     };
   }
 
-  openModal() { this.showModal = true; this.editMode = false; this.newSession = this.defaultSession(); this.formError = ''; this.scroll.disableScroll(); }
-
-  openEditModal(s: Session) {
-    this.editMode = true;
-    this.showModal = true;
-    this.editingId = s.id;
-    this.newSession = { ...s };
-    this.formError = '';
-    this.scroll.disableScroll();
+  openModal() {
+    const dialogRef = this.dialog.open(SessionDialogComponent, {
+      width: '620px',
+      panelClass: 'custom-dialog-container',
+      data: { session: this.defaultSession(), editMode: false }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.data.addSession(result).subscribe(sessions => { this.sessions = sessions; });
+      }
+    });
   }
 
-  closeModal() { this.showModal = false; this.editingId = null; this.scroll.enableScroll(); }
-
-  saveSession() {
-    this.formError = '';
-    if (!this.newSession.title?.trim()) { this.formError = 'Session title is required.'; return; }
-    if (!this.newSession.type) { this.formError = 'Please select a session type.'; return; }
-    if (!this.newSession.date) { this.formError = 'Date is required.'; return; }
-    if (!this.newSession.court) { this.formError = 'Please select a court.'; return; }
-
-    if (this.editMode && this.editingId) {
-      this.data.updateSession(this.editingId, { ...this.newSession, id: this.editingId }).subscribe(sessions => {
-        this.sessions = sessions;
-      });
-    } else {
-      this.data.addSession(this.newSession).subscribe(sessions => {
-        this.sessions = sessions;
-      });
-    }
-    this.closeModal();
+  openEditModal(s: Session) {
+    const dialogRef = this.dialog.open(SessionDialogComponent, {
+      width: '620px',
+      panelClass: 'custom-dialog-container',
+      data: { session: { ...s }, editMode: true }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && s.id) {
+        this.data.updateSession(s.id, { ...result, id: s.id }).subscribe(sessions => { this.sessions = sessions; });
+      }
+    });
   }
 
   async deleteSession(id?: number) {
@@ -81,15 +76,14 @@ export class SessionsComponent implements OnInit {
       type: 'danger'
     });
     if (confirmed) {
-      this.data.deleteSession(id).subscribe(sessions => {
-        this.sessions = sessions;
-      });
+      this.data.deleteSession(id).subscribe(sessions => { this.sessions = sessions; });
     }
   }
 
   getTypeIcon(type: string) {
     return type === 'Training' ? '🎯' : type === 'Practice' ? '🏸' : type === 'Tournament' ? '🏆' : '🤝';
   }
+
   getStatusClass(status: string) {
     return {
       'badge-success': status === 'Ongoing',

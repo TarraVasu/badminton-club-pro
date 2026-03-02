@@ -3,7 +3,8 @@ import { DataService, Player } from '../../services/data.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
-import { ScrollService } from '../../services/scroll.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PlayerDialogComponent } from './player-dialog/player-dialog.component';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -17,10 +18,6 @@ export class PlayersComponent implements OnInit {
   filteredPlayers: Player[] = [];
   searchQuery = '';
   levelFilter = '';
-  showModal = false;
-  editMode = false;
-  formError = '';
-  selectedColorIdx = 0;
   isLoading = false;
 
   colorOptions = [
@@ -34,19 +31,19 @@ export class PlayersComponent implements OnInit {
     'linear-gradient(135deg,#00d4aa,#22c55e)',
   ];
 
-  get previewColor() { return this.colorOptions[this.selectedColorIdx]; }
-
   defaultPlayer = () => ({
     name: '', email: '', phone: '', level: '', wins: 0, losses: 0,
-    points: 0, status: 'Active', avatar: '', joinDate: new Date().toISOString().split('T')[0], matchesPlayed: 0
+    points: 0, status: 'Active', avatar: '', joinDate: new Date().toISOString().split('T')[0],
+    matchesPlayed: 0, jerseyNumber: ''
   });
 
-  newPlayer: any = this.defaultPlayer();
-  editingId?: number | null = null;
-  selectedFile: File | null = null;
-  imagePreview: string | ArrayBuffer | null = null;
-
-  constructor(private data: DataService, public auth: AuthService, private toast: ToastService, private confirmDialog: ConfirmDialogService, private scroll: ScrollService) { }
+  constructor(
+    private data: DataService,
+    public auth: AuthService,
+    private toast: ToastService,
+    private confirmDialog: ConfirmDialogService,
+    private dialog: MatDialog
+  ) { }
 
   get userRole() { return this.auth.user.role; }
 
@@ -59,23 +56,6 @@ export class PlayersComponent implements OnInit {
     });
   }
 
-  selectColor(i: number) { this.selectedColorIdx = i; }
-  updateAvatar() {
-    const parts = this.newPlayer.name.trim().split(' ');
-    this.newPlayer.avatar = parts.map((n: string) => n[0] || '').join('').substring(0, 2).toUpperCase();
-  }
-
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0] as File;
-    if (this.selectedFile) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result;
-      };
-      reader.readAsDataURL(this.selectedFile);
-    }
-  }
-
   getColor(i: number) { return this.colorOptions[i % this.colorOptions.length]; }
   getWinRate(p: Player) { return p.wins + p.losses > 0 ? Math.round((p.wins / (p.wins + p.losses)) * 100) : 0; }
   getLevelClass(level: string) {
@@ -86,60 +66,73 @@ export class PlayersComponent implements OnInit {
   filterPlayers() {
     this.filteredPlayers = this.players.filter(p => {
       const s = this.searchQuery.toLowerCase();
-      return (!s || p.name.toLowerCase().includes(s) || p.email.toLowerCase().includes(s) || p.phone.includes(s))
+      return (!s ||
+        p.name.toLowerCase().includes(s) ||
+        p.email.toLowerCase().includes(s) ||
+        p.phone.includes(s) ||
+        (p.jerseyNumber && p.jerseyNumber.toLowerCase().includes(s))
+      )
         && (!this.levelFilter || p.level === this.levelFilter);
     });
   }
 
   setFilter(level: string) { this.levelFilter = level; this.filterPlayers(); }
 
-  openModal() { this.showModal = true; this.editMode = false; this.newPlayer = this.defaultPlayer(); this.formError = ''; this.selectedFile = null; this.imagePreview = null; this.scroll.disableScroll(); }
-  openEditModal(p: Player) {
-    this.editMode = true;
-    this.showModal = true;
-    this.editingId = p.id;
-    this.newPlayer = { ...p };
-    this.formError = '';
-    this.selectedFile = null;
-    this.imagePreview = p.image || null;
-    this.scroll.disableScroll();
+  openModal() {
+    const dialogRef = this.dialog.open(PlayerDialogComponent, {
+      width: '600px',
+      panelClass: 'custom-dialog-container',
+      data: { player: this.defaultPlayer(), editMode: false }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.savePlayer(result.player, result.file, false);
+      }
+    });
   }
-  closeModal() { this.showModal = false; this.editingId = null; this.selectedFile = null; this.imagePreview = null; this.scroll.enableScroll(); }
 
-  savePlayer() {
-    this.formError = '';
-    if (!this.newPlayer.name.trim()) { this.formError = 'Full name is required.'; return; }
-    if (!this.newPlayer.email.trim()) { this.formError = 'Email address is required.'; return; }
-    if (!this.newPlayer.level) { this.formError = 'Please select a skill level.'; return; }
+  openEditModal(p: Player) {
+    const dialogRef = this.dialog.open(PlayerDialogComponent, {
+      width: '600px',
+      panelClass: 'custom-dialog-container',
+      data: { player: { ...p }, editMode: true }
+    });
 
-    this.updateAvatar();
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.savePlayer(result.player, result.file, true, p.id);
+      }
+    });
+  }
 
+  savePlayer(playerData: any, file: File | null, isEdit: boolean, id?: number) {
     const formData = new FormData();
-    Object.keys(this.newPlayer).forEach(key => {
-      if (this.newPlayer[key] !== null && this.newPlayer[key] !== undefined) {
-        if (key !== 'image') { // Don't append existing image URL string
-          formData.append(key, this.newPlayer[key]);
+    Object.keys(playerData).forEach(key => {
+      if (playerData[key] !== null && playerData[key] !== undefined) {
+        if (key !== 'image') {
+          formData.append(key, playerData[key]);
         }
       }
     });
 
-    if (this.selectedFile) {
-      formData.set('image', this.selectedFile);
+    if (file) {
+      formData.set('image', file);
     }
 
-    if (this.editMode && this.editingId) {
-      this.data.updatePlayer(this.editingId, formData).subscribe(players => {
+    if (isEdit && id) {
+      this.data.updatePlayer(id, formData).subscribe(players => {
         this.players = players;
         this.filterPlayers();
+        this.toast.success('Player updated successfully');
       });
     } else {
       this.data.addPlayer(formData).subscribe(players => {
         this.players = players;
         this.filterPlayers();
+        this.toast.success('Player added successfully');
       });
     }
-    this.filterPlayers();
-    this.closeModal();
   }
 
   async deletePlayer(id?: number) {
@@ -179,12 +172,13 @@ export class PlayersComponent implements OnInit {
         doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 40);
 
         // Define table columns
-        const head = [['#', 'Player Name', 'Email', 'Level', 'Wins', 'Losses', 'Points', 'Rate']];
+        const head = [['#', 'Player Name', 'Jersey', 'Email', 'Level', 'Wins', 'Losses', 'Points', 'Rate']];
 
         // Prepare table data
         const body = this.filteredPlayers.map((p, i) => [
           i + 1,
           p.name,
+          p.jerseyNumber || '-',
           p.email,
           p.level,
           p.wins,

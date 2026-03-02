@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService, Payment } from '../../services/data.service';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
-import { ScrollService } from '../../services/scroll.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PaymentDialogComponent } from './payment-dialog/payment-dialog.component';
 
 @Component({
   selector: 'app-payments',
@@ -14,25 +15,13 @@ export class PaymentsComponent implements OnInit {
   isLoading = false;
   playerNames: string[] = [];
   statusFilter = '';
-  showModal = false;
-  editMode = false;
-  formError = '';
-  editingId: number | null = null;
 
   totalCollected = 0;
   totalPending = 0;
   pendingCount = 0;
   collectionRate = 0;
 
-  statusOptions = [
-    { value: 'Paid', icon: '✅', label: 'Paid' },
-    { value: 'Pending', icon: '⏳', label: 'Pending' },
-    { value: 'Overdue', icon: '🚨', label: 'Overdue' },
-  ];
-
-  newPayment: any = this.defaultPayment();
-
-  constructor(private data: DataService, private confirmDialog: ConfirmDialogService, private scroll: ScrollService) { }
+  constructor(private data: DataService, private confirmDialog: ConfirmDialogService, private dialog: MatDialog) { }
 
   ngOnInit() {
     this.isLoading = true;
@@ -65,32 +54,28 @@ export class PaymentsComponent implements OnInit {
     this.filteredPayments = this.statusFilter ? this.payments.filter(p => p.status === this.statusFilter) : [...this.payments];
   }
 
-  openModal() { this.showModal = true; this.editMode = false; this.newPayment = this.defaultPayment(); this.formError = ''; this.scroll.disableScroll(); }
-
-  closeModal() { this.showModal = false; this.editingId = null; this.scroll.enableScroll(); }
-
-  savePayment() {
-    this.formError = '';
-    if (!this.newPayment.player) { this.formError = 'Please select a player.'; return; }
-    if (!this.newPayment.type) { this.formError = 'Please select a payment type.'; return; }
-    if (!this.newPayment.amount || this.newPayment.amount <= 0) { this.formError = 'Please enter a valid amount.'; return; }
-
-    const ref = this.newPayment.reference?.trim() || ('TXN' + Math.floor(Math.random() * 999999).toString().padStart(6, '0'));
-    const payment: Omit<Payment, 'id'> = {
-      player: this.newPayment.player,
-      amount: this.newPayment.amount,
-      type: this.newPayment.type,
-      date: this.newPayment.date,
-      status: this.newPayment.status,
-      method: this.newPayment.status === 'Paid' ? this.newPayment.method : '-',
-      reference: this.newPayment.status === 'Paid' ? ref : '-',
-    };
-    this.data.addPayment(payment).subscribe(payments => {
-      this.payments = payments;
-      this.computeStats();
-      this.filterPayments();
+  openModal() {
+    const dialogRef = this.dialog.open(PaymentDialogComponent, {
+      width: '580px',
+      panelClass: 'custom-dialog-container',
+      data: { payment: this.defaultPayment(), editMode: false, playerNames: this.playerNames }
     });
-    this.closeModal();
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const ref = result.reference?.trim() || ('TXN' + Math.floor(Math.random() * 999999).toString().padStart(6, '0'));
+        const payment: Omit<Payment, 'id'> = {
+          player: result.player, amount: result.amount, type: result.type,
+          date: result.date, status: result.status,
+          method: result.status === 'Paid' ? result.method : '-',
+          reference: result.status === 'Paid' ? ref : '-',
+        };
+        this.data.addPayment(payment).subscribe(payments => {
+          this.payments = payments;
+          this.computeStats();
+          this.filterPayments();
+        });
+      }
+    });
   }
 
   markPaid(payment: Payment) {
@@ -134,3 +119,4 @@ export class PaymentsComponent implements OnInit {
     return icons[method] || '💰';
   }
 }
+

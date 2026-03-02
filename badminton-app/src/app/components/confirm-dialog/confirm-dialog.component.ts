@@ -1,47 +1,37 @@
-import { Component } from '@angular/core';
-import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { Component, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ConfirmDialogOptions } from '../../services/confirm-dialog.service';
 
 @Component({
-    selector: 'app-confirm-dialog',
-    template: `
-<div class="confirm-overlay" *ngIf="dialog.state.visible" (click)="onOverlayClick($event)">
-  <div class="confirm-box animate-scale-in">
-    <div class="confirm-icon" [ngClass]="dialog.state.type">
-      <span *ngIf="dialog.state.type === 'danger'">🗑️</span>
-      <span *ngIf="dialog.state.type === 'warning'">⚠️</span>
-      <span *ngIf="dialog.state.type === 'info'">ℹ️</span>
+  selector: 'app-confirm-dialog',
+  template: `
+<div class="confirm-box animate-scale-in">
+    <div class="confirm-icon" [ngClass]="data.type || 'danger'">
+        <span *ngIf="data.type === 'danger'">🗑️</span>
+        <span *ngIf="data.type === 'warning'">⚠️</span>
+        <span *ngIf="data.type === 'info'">ℹ️</span>
     </div>
-    <h3 class="confirm-title">{{ dialog.state.title }}</h3>
-    <p class="confirm-message">{{ dialog.state.message }}</p>
+    <h3 class="confirm-title">{{ data.title }}</h3>
+    <p class="confirm-message">{{ data.message }}</p>
     <div class="confirm-actions">
-      <button class="btn-cancel" (click)="dialog.close(false)">{{ dialog.state.cancelText }}</button>
-      <button class="btn-confirm" [ngClass]="dialog.state.type" (click)="dialog.close(true)">{{ dialog.state.confirmText }}</button>
+        <button class="btn-cancel" (click)="onClose(false)">{{ data.cancelText || 'Cancel' }}</button>
+        <button class="btn-confirm" [ngClass]="data.type || 'danger'" (click)="onClose(true)">{{ data.confirmText || 'Confirm' }}</button>
     </div>
-  </div>
 </div>
   `,
-    styles: [`
-    .confirm-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+  styles: [`
+    :host {
+        display: block;
+        background: #1a1f35;
+        border-radius: 20px;
+        overflow: hidden;
     }
 
     .confirm-box {
-      background: #1a1f35;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 36px 32px;
-      max-width: 420px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        padding: 36px 32px;
+        max-width: 420px;
+        width: 100%;
+        text-align: center;
     }
 
     .confirm-icon {
@@ -123,11 +113,13 @@ import { ConfirmDialogService } from '../../services/confirm-dialog.service';
   `]
 })
 export class ConfirmDialogComponent {
-    constructor(public dialog: ConfirmDialogService) { }
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogOptions
+  ) { }
 
-    onOverlayClick(event: MouseEvent) {
-        if ((event.target as HTMLElement).classList.contains('confirm-overlay')) {
-            this.dialog.close(false);
-        }
-    }
+  onClose(result: boolean) {
+    this.dialogRef.close(result);
+  }
 }
+

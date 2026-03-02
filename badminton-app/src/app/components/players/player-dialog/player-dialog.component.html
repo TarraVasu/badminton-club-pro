@@ -1,0 +1,99 @@
+<div class="modal-header">
+    <div class="modal-title-wrap">
+        <div class="modal-icon">{{ editMode ? '📝' : '👤' }}</div>
+        <div>
+            <h3>{{ editMode ? 'Edit Player' : 'Add New Player' }}</h3>
+            <p class="modal-subtitle">{{ editMode ? 'Update member information' : 'Create a new club member' }}</p>
+        </div>
+    </div>
+    <button class="close-btn" (click)="onCancel()">✕</button>
+</div>
+
+<div class="modal-body">
+    <!-- Profile & Avatar Section -->
+    <div class="form-section-title">
+        <span>Avatar & Branding</span>
+    </div>
+    <div class="avatar-preview-row">
+        <div *ngIf="!imagePreview" class="avatar-preview" [style.background]="previewColor">
+            {{ player.avatar || '?' }}
+        </div>
+        <div *ngIf="imagePreview" class="image-preview-circle">
+            <img [src]="imagePreview" alt="Avatar Preview">
+        </div>
+        <div class="color-picks">
+            <div *ngFor="let c of colorOptions; let i = index" class="color-dot" [style.background]="c"
+                [class.selected]="selectedColorIdx === i" (click)="selectColor(i)">
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Upload -->
+    <div class="form-group">
+        <label>Profile Image</label>
+        <div class="file-input-container">
+            <div class="file-input-wrapper">
+                <input type="file" (change)="onFileSelected($event)" accept="image/*">
+                <span class="file-hint">Optional: Upload a player photo</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Basic Info -->
+    <div class="form-section-title">
+        <span>Personal Details</span>
+    </div>
+    <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" [(ngModel)]="player.name" (input)="updateAvatar()" placeholder="e.g. John Doe">
+    </div>
+
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" [(ngModel)]="player.email" placeholder="john@example.com">
+        </div>
+        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" [(ngModel)]="player.phone" placeholder="+91 98765 43210">
+        </div>
+    </div>
+
+    <!-- Club Details -->
+    <div class="form-section-title">
+        <span>Club Details</span>
+    </div>
+    <div class="grid-3">
+        <div class="form-group">
+            <label>Skill Level</label>
+            <select [(ngModel)]="player.level">
+                <option value="" disabled>Select Level</option>
+                <option value="Advanced">Advanced</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Beginner">Beginner</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Jersey Number</label>
+            <input type="text" [(ngModel)]="player.jerseyNumber" placeholder="e.g. 10">
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select [(ngModel)]="player.status">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-error" *ngIf="formError">
+        ⚠️ {{ formError }}
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-outline" (click)="onCancel()">Cancel</button>
+    <button class="btn btn-primary" (click)="onSave()">
+        {{ editMode ? 'Update Player' : 'Create Player' }}
+    </button>
+</div>

@@ -129,6 +129,24 @@
             margin-bottom: 2px;
         }
 
+        .name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .jersey-pill {
+            background: rgba(0, 212, 170, 0.1);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            height: fit-content;
+        }
+
         .player-email {
             font-size: 11px;
             color: var(--text-secondary);
