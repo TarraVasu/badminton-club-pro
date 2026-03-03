@@ -22,17 +22,52 @@ import { LoaderService } from '../../services/loader.service';
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(15, 23, 42, 0.9);
+      background: linear-gradient(135deg, #071927 0%, #083030 40%, #0a1f35 100%);
       backdrop-filter: blur(8px);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 9999;
-      color: white;
+      overflow: hidden;
+    }
+
+    /* Glowing orb top-left */
+    .loader-overlay::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      left: -80px;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(0, 212, 170, 0.18) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 4s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    /* Glowing orb bottom-right */
+    .loader-overlay::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      right: -80px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.14) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 4s ease-in-out infinite alternate-reverse;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.5; transform: scale(1); }
+      to   { opacity: 1;   transform: scale(1.15); }
     }
 
     .loader-content {
       text-align: center;
+      position: relative;
+      z-index: 1;
     }
 
     .badminton-court {
@@ -48,6 +83,7 @@ import { LoaderService } from '../../services/loader.service';
     .racket {
       font-size: 3rem;
       transition: transform 0.1s ease;
+      filter: drop-shadow(0 0 14px rgba(0, 212, 170, 0.6));
     }
 
     .shuttlecock {
@@ -55,7 +91,7 @@ import { LoaderService } from '../../services/loader.service';
       position: absolute;
       left: 10%;
       animation: smash 1.2s infinite ease-in-out;
-      filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+      filter: drop-shadow(0 0 14px rgba(0, 212, 170, 0.7));
     }
 
     .racket-left {
@@ -86,13 +122,14 @@ import { LoaderService } from '../../services/loader.service';
 
     .loader-text {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 500;
-      letter-spacing: 1px;
-      background: linear-gradient(90deg, #fff, #3b82f6, #fff);
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      background: linear-gradient(90deg, #ffffff 0%, #00d4aa 50%, #ffffff 100%);
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
       animation: shine 2s linear infinite;
     }
 

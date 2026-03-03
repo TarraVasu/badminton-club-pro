@@ -31,6 +31,7 @@ class Match(models.Model):
     status = models.CharField(max_length=50)
     winner = models.CharField(max_length=150, blank=True, null=True)
     duration = models.CharField(max_length=50)
+    is_demo = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.player1} vs {self.player2}"
@@ -46,6 +47,7 @@ class Session(models.Model):
     type = models.CharField(max_length=50)
     status = models.CharField(max_length=50)
     fee = models.IntegerField(default=0)
+    is_demo = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -58,6 +60,7 @@ class Payment(models.Model):
     status = models.CharField(max_length=50)
     method = models.CharField(max_length=50)
     reference = models.CharField(max_length=150, blank=True, null=True)
+    is_demo = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.player} - {self.amount}"

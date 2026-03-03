@@ -35,10 +35,46 @@ import { Component, Input } from '@angular/core';
       padding: 60px 24px;
       text-align: center;
       min-height: 350px;
-      background: rgba(15, 23, 42, 0.4);
+      background: linear-gradient(135deg, #0d2137 0%, #0a3d3d 50%, #0d1f2d 100%);
       border-radius: 24px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+      box-shadow:
+        0 0 60px rgba(0, 212, 170, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+
+    /* Subtle animated glow orbs in background */
+    .loading-state-container::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      left: -40px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(0, 212, 170, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulseBg 3s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    .loading-state-container::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      right: -40px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulseBg 3s ease-in-out infinite alternate-reverse;
+      pointer-events: none;
+    }
+
+    @keyframes pulseBg {
+      from { opacity: 0.6; transform: scale(1); }
+      to   { opacity: 1;   transform: scale(1.2); }
     }
 
     .loader-visual {
@@ -46,6 +82,8 @@ import { Component, Input } from '@angular/core';
       flex-direction: column;
       align-items: center;
       gap: 24px;
+      position: relative;
+      z-index: 1;
     }
 
     /* Animated Badminton Loader */
@@ -62,6 +100,7 @@ import { Component, Input } from '@angular/core';
     .racket {
       font-size: 48px;
       z-index: 2;
+      filter: drop-shadow(0 0 12px rgba(0, 212, 170, 0.5));
     }
 
     .racket-left {
@@ -78,7 +117,7 @@ import { Component, Input } from '@angular/core';
       left: 10%;
       z-index: 1;
       animation: shuttleSmash 1.2s infinite ease-in-out;
-      filter: drop-shadow(0 0 10px rgba(0, 212, 170, 0.4));
+      filter: drop-shadow(0 0 14px rgba(0, 212, 170, 0.6));
     }
 
     @keyframes swingLeft {
@@ -100,35 +139,54 @@ import { Component, Input } from '@angular/core';
     }
 
     .loader-info {
+      position: relative;
+      z-index: 1;
+
       h3 {
         font-family: 'Poppins', sans-serif;
-        color: var(--text-primary);
-        font-size: 20px;
-        margin-bottom: 8px;
+        background: linear-gradient(90deg, #ffffff, #00d4aa, #ffffff);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 22px;
+        margin-bottom: 10px;
         font-weight: 700;
         letter-spacing: -0.5px;
+        animation: textShine 2.5s linear infinite;
       }
+
       p {
-        color: var(--text-muted);
+        color: rgba(180, 220, 215, 0.85);
         font-size: 14px;
+        letter-spacing: 0.3px;
       }
     }
 
+    @keyframes textShine {
+      to { background-position: 200% center; }
+    }
+
     .empty-visual {
+      position: relative;
+      z-index: 1;
+
       .empty-icon {
         font-size: 64px;
         margin-bottom: 20px;
-        filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+        filter: drop-shadow(0 10px 20px rgba(0, 212, 170, 0.3));
       }
+
       h3 {
         font-family: 'Poppins', sans-serif;
         font-size: 22px;
         font-weight: 700;
         margin-bottom: 10px;
-        color: var(--text-primary);
+        color: #e2f8f4;
       }
+
       p {
-        color: var(--text-secondary);
+        color: rgba(180, 220, 215, 0.8);
         max-width: 400px;
         margin: 0 auto;
         line-height: 1.6;

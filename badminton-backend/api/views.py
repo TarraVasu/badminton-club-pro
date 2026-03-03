@@ -9,21 +9,83 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Player, Match, Session, Payment
 from .serializers import PlayerSerializer, MatchSerializer, SessionSerializer, PaymentSerializer
 
+DEMO_USERNAME = 'demo'
+
+def is_demo_user(user):
+    return user.is_authenticated and user.username == DEMO_USERNAME
+
+def get_queryset_for_user(user, queryset_all, queryset_demo, queryset_real):
+    """
+    Returns the appropriate queryset based on who is logged in:
+      - demo user  → demo data only
+      - superuser  → all data
+      - other user → real (non-demo) data only
+    """
+    if not user or not user.is_authenticated:
+        return queryset_real
+    if user.is_superuser:
+        return queryset_all
+    if is_demo_user(user):
+        return queryset_demo
+    return queryset_real
+
+
 class PlayerViewSet(viewsets.ModelViewSet):
-    queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return Player.objects.all()
+        if is_demo_user(user):
+            # Demo user sees ALL players (including demo ones)
+            return Player.objects.filter(user__username=DEMO_USERNAME) | Player.objects.filter(user__is_superuser=False).exclude(user__username=DEMO_USERNAME)[:0]
+        # For now, non-demo users just see all non-demo players
+        return Player.objects.exclude(user__username=DEMO_USERNAME)
+
 
 class MatchViewSet(viewsets.ModelViewSet):
-    queryset = Match.objects.all()
     serializer_class = MatchSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return get_queryset_for_user(
+            user,
+            queryset_all=Match.objects.all(),
+            queryset_demo=Match.objects.filter(is_demo=True),
+            queryset_real=Match.objects.filter(is_demo=False),
+        )
+
 
 class SessionViewSet(viewsets.ModelViewSet):
-    queryset = Session.objects.all()
     serializer_class = SessionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return get_queryset_for_user(
+            user,
+            queryset_all=Session.objects.all(),
+            queryset_demo=Session.objects.filter(is_demo=True),
+            queryset_real=Session.objects.filter(is_demo=False),
+        )
+
 
 class PaymentViewSet(viewsets.ModelViewSet):
-    queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return get_queryset_for_user(
+            user,
+            queryset_all=Payment.objects.all(),
+            queryset_demo=Payment.objects.filter(is_demo=True),
+            queryset_real=Payment.objects.filter(is_demo=False),
+        )
+
 
 class CustomObtainAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -38,11 +100,9 @@ class CustomObtainAuthToken(ObtainAuthToken):
         User = get_user_model()
 
         try:
-            # User authentication via EmailBackend (handles both username and email)
             user = authenticate(username=username, password=password)
 
             if user is None:
-                # Check if user exists to provide specific error
                 user_exists = User.objects.filter(Q(username__iexact=username) | Q(email__iexact=username)).exists()
                 if not user_exists:
                     return Response({'error': 'user_not_found'}, status=status.HTTP_404_NOT_FOUND)
@@ -59,11 +119,13 @@ class CustomObtainAuthToken(ObtainAuthToken):
                 'username': user.username,
                 'full_name': f"{user.first_name} {user.last_name}".strip() or user.username,
                 'is_staff': user.is_staff,
-                'is_superuser': user.is_superuser
+                'is_superuser': user.is_superuser,
+                'is_demo': user.username == DEMO_USERNAME,
             })
         except Exception as e:
             print(f"Login error: {str(e)}")
             return Response({'error': 'internal_server_error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -98,6 +160,7 @@ class ProfileView(APIView):
             return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class PingView(APIView):
     def get(self, request):

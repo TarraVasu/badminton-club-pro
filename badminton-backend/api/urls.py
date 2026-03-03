@@ -3,10 +3,10 @@ from rest_framework.routers import DefaultRouter
 from .views import PlayerViewSet, MatchViewSet, SessionViewSet, PaymentViewSet, ProfileView, PingView
 
 router = DefaultRouter()
-router.register(r'players', PlayerViewSet)
-router.register(r'matches', MatchViewSet)
-router.register(r'sessions', SessionViewSet)
-router.register(r'payments', PaymentViewSet)
+router.register(r'players', PlayerViewSet, basename='player')
+router.register(r'matches', MatchViewSet, basename='match')
+router.register(r'sessions', SessionViewSet, basename='session')
+router.register(r'payments', PaymentViewSet, basename='payment')
 
 urlpatterns = [
     path('', include(router.urls)),
