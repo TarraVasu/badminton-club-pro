@@ -68,7 +68,15 @@ export class PlayerDialogComponent implements OnInit {
     onSave(): void {
         this.formError = '';
         if (!this.player.name.trim()) { this.formError = 'Full name is required.'; return; }
-        if (!this.player.email.trim()) { this.formError = 'Email address is required.'; return; }
+
+        const email = (this.player.email || '').trim();
+        if (!email) { this.formError = 'Email address is required.'; return; }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) { this.formError = 'Please enter a valid email address.'; return; }
+
+        const phone = (this.player.phone || '').trim();
+        if (phone && !/^[0-9]{10}$/.test(phone)) { this.formError = 'Phone number must be exactly 10 digits.'; return; }
+
         if (!this.player.level) { this.formError = 'Please select a skill level.'; return; }
 
         this.updateAvatar();
