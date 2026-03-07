@@ -7,9 +7,23 @@ import { LoaderService } from '../../services/loader.service';
     <div class="loader-overlay" *ngIf="loaderService.loading$ | async">
       <div class="loader-content">
         <div class="badminton-court">
-          <div class="racket racket-left">🏸</div>
-          <div class="shuttlecock">☁️</div>
-          <div class="racket racket-right">🏸</div>
+          <div class="racket racket-left">
+            <svg class="racket-icon" viewBox="0 0 100 100">
+              <ellipse cx="50" cy="35" rx="30" ry="35" fill="none" stroke="currentColor" stroke-width="4"/>
+              <path d="M50 70 L50 95" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+              <path d="M35 20 L65 50 M25 35 L75 35 M35 50 L65 20" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="shuttlecock">
+            <img src="assets/images/jam.gif" alt="shuttle" class="shuttle-gif">
+          </div>
+          <div class="racket racket-right">
+            <svg class="racket-icon" viewBox="0 0 100 100">
+              <ellipse cx="50" cy="35" rx="30" ry="35" fill="none" stroke="currentColor" stroke-width="4"/>
+              <path d="M50 70 L50 95" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+              <path d="M35 20 L65 50 M25 35 L75 35 M35 50 L65 20" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            </svg>
+          </div>
         </div>
         <p class="loader-text">Birdie Beasts are Smashing... 🐾</p>
       </div>
@@ -81,17 +95,32 @@ import { LoaderService } from '../../services/loader.service';
     }
 
     .racket {
-      font-size: 3rem;
+      width: 70px;
+      height: 70px;
+      color: #00d4aa;
       transition: transform 0.1s ease;
       filter: drop-shadow(0 0 14px rgba(0, 212, 170, 0.6));
     }
 
+    .racket-icon {
+      width: 100%;
+      height: 100%;
+    }
+
     .shuttlecock {
-      font-size: 2rem;
       position: absolute;
       left: 10%;
       animation: smash 1.2s infinite ease-in-out;
       filter: drop-shadow(0 0 14px rgba(0, 212, 170, 0.7));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shuttle-gif {
+      width: 35px;
+      height: 35px;
+      object-fit: contain;
     }
 
     .racket-left {

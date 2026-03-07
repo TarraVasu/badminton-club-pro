@@ -7,9 +7,23 @@ import { Component, Input } from '@angular/core';
       <div class="loader-visual" *ngIf="isLoading">
         <!-- Animated Smash Loader -->
         <div class="badminton-loader">
-          <div class="racket racket-left">🏸</div>
-          <div class="shuttle">☁️</div>
-          <div class="racket racket-right">🏸</div>
+          <div class="racket racket-left">
+            <svg class="racket-icon" viewBox="0 0 100 100">
+              <ellipse cx="50" cy="35" rx="30" ry="35" fill="none" stroke="currentColor" stroke-width="4"/>
+              <path d="M50 70 L50 95" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+              <path d="M35 20 L65 50 M25 35 L75 35 M35 50 L65 20" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="shuttle">
+            <img src="assets/images/jam.gif" alt="shuttle" class="shuttle-gif">
+          </div>
+          <div class="racket racket-right">
+            <svg class="racket-icon" viewBox="0 0 100 100">
+              <ellipse cx="50" cy="35" rx="30" ry="35" fill="none" stroke="currentColor" stroke-width="4"/>
+              <path d="M50 70 L50 95" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+              <path d="M35 20 L65 50 M25 35 L75 35 M35 50 L65 20" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            </svg>
+          </div>
         </div>
         
         <div class="loader-info">
@@ -98,9 +112,16 @@ import { Component, Input } from '@angular/core';
     }
 
     .racket {
-      font-size: 48px;
+      width: 60px;
+      height: 60px;
       z-index: 2;
+      color: #00d4aa;
       filter: drop-shadow(0 0 12px rgba(0, 212, 170, 0.5));
+    }
+
+    .racket-icon {
+      width: 100%;
+      height: 100%;
     }
 
     .racket-left {
@@ -112,12 +133,20 @@ import { Component, Input } from '@angular/core';
     }
 
     .shuttle {
-      font-size: 28px;
       position: absolute;
       left: 10%;
       z-index: 1;
       animation: shuttleSmash 1.2s infinite ease-in-out;
       filter: drop-shadow(0 0 14px rgba(0, 212, 170, 0.6));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shuttle-gif {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
     }
 
     @keyframes swingLeft {
