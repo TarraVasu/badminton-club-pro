@@ -1,0 +1,55 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: badminton-app/package-lock.json
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Angular dependencies
+        working-directory: badminton-app
+        run: npm ci
+
+      - name: Build Angular app for production
+        working-directory: badminton-app
+        run: npx ng build --configuration production
+
+      - name: Add Capacitor Android platform
+        working-directory: badminton-app
+        run: npx cap add android
+
+      - name: Sync Capacitor
+        working-directory: badminton-app
+        run: npx cap sync android
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build debug APK
+        working-directory: badminton-app/android
+        run: chmod +x gradlew && ./gradlew assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: birdie-beasts-apk
+          path: badminton-app/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
