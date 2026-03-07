@@ -29,6 +29,8 @@ import { SessionDialogComponent } from './components/sessions/session-dialog/ses
 import { PaymentDialogComponent } from './components/payments/payment-dialog/payment-dialog.component';
 import { ScheduleMatchDialogComponent } from './components/matches/schedule-match-dialog/schedule-match-dialog.component';
 import { ScoreMatchDialogComponent } from './components/matches/score-match-dialog/score-match-dialog.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -63,7 +65,9 @@ import { ScoreMatchDialogComponent } from './components/matches/score-match-dial
     BrowserAnimationsModule,
     MatDialogModule,
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PlayerDialogComponent } from './player-dialog/player-dialog.component';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-players',
@@ -62,6 +63,20 @@ export class PlayersComponent implements OnInit {
     return { 'level-advanced': level === 'Advanced', 'level-intermediate': level === 'Intermediate', 'level-beginner': level === 'Beginner' };
   }
   getLevelIcon(level: string) { return level === 'Advanced' ? '⚡' : level === 'Intermediate' ? '🌟' : '🌱'; }
+
+  getInitials(name: string) {
+    const parts = (name || '').trim().split(' ');
+    return parts.map(n => n[0] || '').join('').substring(0, 2).toUpperCase();
+  }
+
+  getPlayerImage(image: any) {
+    if (!image) return null;
+    if (typeof image === 'string') {
+      if (image.startsWith('http')) return image;
+      return `${environment.baseUrl}${image}`;
+    }
+    return null;
+  }
 
   filterPlayers() {
     this.filteredPlayers = this.players.filter(p => {

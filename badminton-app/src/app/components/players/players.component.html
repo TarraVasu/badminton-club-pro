@@ -31,6 +31,10 @@
     <div class="players-grid animate-stagger" *ngIf="filteredPlayers.length > 0">
         <div class="player-card" *ngFor="let p of filteredPlayers; let i = index">
             <div class="player-card-header">
+                <div class="player-avatar" [style.background]="getColor(i)">
+                    <img *ngIf="p.image" [src]="getPlayerImage(p.image)" [alt]="p.name" class="avatar-img">
+                    <span *ngIf="!p.image">{{ getInitials(p.name) }}</span>
+                </div>
                 <div class="player-meta">
                     <div class="name-row">
                         <h3>{{ p.name }}</h3>
