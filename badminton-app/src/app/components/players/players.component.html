@@ -34,11 +34,14 @@
                 <div class="player-avatar" [style.background]="getColor(i)">
                     <img *ngIf="p.image" [src]="getPlayerImage(p.image)" [alt]="p.name" class="avatar-img">
                     <span *ngIf="!p.image">{{ getInitials(p.name) }}</span>
+                       <!-- Jersey Number -->
+                    <span class="jersey-badge" *ngIf="p.jerseyNumber">
+                        #{{ p.jerseyNumber }}
+                    </span>
                 </div>
                 <div class="player-meta">
                     <div class="name-row">
                         <h3>{{ p.name }}</h3>
-                        <span class="jersey-pill" *ngIf="p.jerseyNumber">#{{ p.jerseyNumber }}</span>
                     </div>
                     <p class="player-email">{{ p.email }}</p>
                     <span class="badge" [ngClass]="p.status === 'Active' ? 'badge-success' : 'badge-warning'">{{
