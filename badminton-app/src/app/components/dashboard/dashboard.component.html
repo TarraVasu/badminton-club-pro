@@ -23,19 +23,17 @@
     <div class="hero-banner animate-fade-in">
         <div class="hero-content" *ngIf="userRole === 'Admin'">
             <h1>Welcome back, <span>Admin!</span></h1>
-            <p>Your club management dashboard. Here is a quick overview of today's activities, matches, and revenue.</p>
+            <p>Your club management dashboard. Quick overview of today's activities, matches, and revenue.</p>
         </div>
         <div class="hero-content" *ngIf="userRole === 'Player'">
             <h1>Ready to play, <span>Champion?</span></h1>
-            <p>Welcome to the player lounge. Check out your rankings, upcoming sessions, and recent matches.</p>
+            <p>Welcome to the player lounge. Check your rankings, upcoming sessions, and recent matches.</p>
         </div>
         <div class="hero-actions" *ngIf="userRole === 'Admin'">
-            <button class="btn btn-outline"
-                style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2)"
-                (click)="exportReport()">📤 Export Report</button>
-            <button class="btn btn-primary animate-scale-in" style="box-shadow: 0 0 15px rgba(0,212,170,0.4)"
-                (click)="goTo('matches')">+ Add Match</button>
+            <button class="btn btn-outline" (click)="exportReport()">📤 Export Report</button>
+            <button class="btn btn-primary animate-scale-in" (click)="goTo('matches')">+ Add Match</button>
         </div>
+        <div class="hero-deco">🏸</div>
     </div>
 
     <!-- Stats Grid -->

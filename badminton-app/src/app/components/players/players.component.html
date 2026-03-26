@@ -29,23 +29,23 @@
 
     <!-- Players Grid -->
     <div class="players-grid animate-stagger" *ngIf="filteredPlayers.length > 0">
-        <div class="player-card" *ngFor="let p of filteredPlayers; let i = index">
+        <div class="player-card" [ngClass]="getLevelClass(p.level)" *ngFor="let p of filteredPlayers; let i = index">
+            <div class="card-top-accent" [ngClass]="getLevelClass(p.level)"></div>
             <div class="player-card-header">
                 <div class="player-avatar" [style.background]="getColor(i)">
                     <img *ngIf="p.image" [src]="getPlayerImage(p.image)" [alt]="p.name" class="avatar-img">
                     <span *ngIf="!p.image">{{ getInitials(p.name) }}</span>
-                       <!-- Jersey Number -->
-                    <span class="jersey-badge" *ngIf="p.jerseyNumber">
-                        #{{ p.jerseyNumber }}
-                    </span>
+                    <span class="jersey-badge" *ngIf="p.jerseyNumber">#{{ p.jerseyNumber }}</span>
                 </div>
                 <div class="player-meta">
                     <div class="name-row">
                         <h3>{{ p.name }}</h3>
                     </div>
                     <p class="player-email">{{ p.email }}</p>
-                    <span class="badge" [ngClass]="p.status === 'Active' ? 'badge-success' : 'badge-warning'">{{
-                        p.status }}</span>
+                    <div class="meta-badges">
+                        <span class="badge" [ngClass]="p.status === 'Active' ? 'badge-success' : 'badge-warning'">{{ p.status }}</span>
+                        <span class="level-badge" [ngClass]="getLevelClass(p.level)">{{ getLevelIcon(p.level) }} {{ p.level }}</span>
+                    </div>
                 </div>
                 <div class="card-actions" *ngIf="userRole === 'Admin'">
                     <button class="action-btn" title="Edit" (click)="openEditModal(p)">✏️</button>
@@ -53,26 +53,24 @@
                 </div>
             </div>
             <div class="player-stats">
-                <div class="pstat"><span class="pstat-val">{{ p.wins }}</span><span class="pstat-label">Wins</span>
-                </div>
-                <div class="pstat"><span class="pstat-val">{{ p.losses }}</span><span class="pstat-label">Losses</span>
-                </div>
-                <div class="pstat"><span class="pstat-val">{{ p.points }}</span><span class="pstat-label">Points</span>
-                </div>
-                <div class="pstat"><span class="pstat-val">{{ getWinRate(p) }}%</span><span class="pstat-label">Win
-                        Rate</span></div>
+                <div class="pstat wins"><span class="pstat-icon">🏆</span><span class="pstat-val">{{ p.wins }}</span><span class="pstat-label">Wins</span></div>
+                <div class="pstat losses"><span class="pstat-icon">❌</span><span class="pstat-val">{{ p.losses }}</span><span class="pstat-label">Losses</span></div>
+                <div class="pstat points"><span class="pstat-icon">⭐</span><span class="pstat-val">{{ p.points }}</span><span class="pstat-label">Points</span></div>
+                <div class="pstat winrate"><span class="pstat-icon">📈</span><span class="pstat-val">{{ getWinRate(p) }}%</span><span class="pstat-label">Win Rate</span></div>
             </div>
-            <div class="player-quick">
-                <span class="quick-info">📞 {{ p.phone }}</span>
-                <span class="quick-info">🏸 {{ p.matchesPlayed }} matches</span>
+            <div class="win-bar-wrap">
+                <div class="win-bar-labels">
+                    <span>Win Rate</span>
+                    <span>{{ getWinRate(p) }}%</span>
+                </div>
+                <div class="win-bar">
+                    <div class="win-fill" [style.width.%]="getWinRate(p)"></div>
+                </div>
             </div>
             <div class="player-footer">
-                <span class="level-badge" [ngClass]="getLevelClass(p.level)">{{ getLevelIcon(p.level) }} {{ p.level
-                    }}</span>
+                <span class="quick-chip">📞 {{ p.phone }}</span>
+                <span class="quick-chip">🏸 {{ p.matchesPlayed }} matches</span>
                 <span class="join-date">Joined {{ p.joinDate | date:'MMM y' }}</span>
-            </div>
-            <div class="win-bar">
-                <div class="win-fill" [style.width.%]="getWinRate(p)"></div>
             </div>
         </div>
     </div>
