@@ -14,7 +14,7 @@
     <div class="filters-bar animate-fade-in" style="animation-delay: 0.1s">
         <div class="search-pill">
             <span>🔍</span>
-            <input type="text" placeholder="Search players..." [(ngModel)]="searchQuery" (input)="filterPlayers()">
+            <input type="text" placeholder="Search players..." aria-label="Search players" [(ngModel)]="searchQuery" (input)="filterPlayers()">
         </div>
         <div class="filter-group">
             <button class="filter-btn" [class.active]="levelFilter === ''" (click)="setFilter('')">All</button>
@@ -33,7 +33,7 @@
             <div class="card-top-accent" [ngClass]="getLevelClass(p.level)"></div>
             <div class="player-card-header">
                 <div class="player-avatar" [style.background]="getColor(i)">
-                    <img *ngIf="p.image" [src]="getPlayerImage(p.image)" [alt]="p.name" class="avatar-img">
+                    <img *ngIf="p.image" [src]="getPlayerImage(p.image)" [alt]="p.name" class="avatar-img" loading="lazy" width="60" height="60">
                     <span *ngIf="!p.image">{{ getInitials(p.name) }}</span>
                     <span class="jersey-badge" *ngIf="p.jerseyNumber">#{{ p.jerseyNumber }}</span>
                 </div>
@@ -48,8 +48,8 @@
                     </div>
                 </div>
                 <div class="card-actions" *ngIf="userRole === 'Admin'">
-                    <button class="action-btn" title="Edit" (click)="openEditModal(p)">✏️</button>
-                    <button class="action-btn danger" title="Delete" (click)="deletePlayer(p.id)">🗑️</button>
+                    <button class="action-btn" title="Edit" aria-label="Edit player" (click)="openEditModal(p)">✏️</button>
+                    <button class="action-btn danger" title="Delete" aria-label="Delete player" (click)="deletePlayer(p.id)">🗑️</button>
                 </div>
             </div>
             <div class="player-stats">

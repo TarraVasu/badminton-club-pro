@@ -146,7 +146,7 @@
                     <div class="top-player" *ngFor="let p of topPlayers; let i = index">
                         <span class="rank" [ngClass]="getRankClass(i + 1)">{{ getRankEmoji(i + 1) }}</span>
                         <div class="avatar-sm" [style.background]="getAvatarColor(i)">
-                            <img *ngIf="p.image" [src]="p.image" alt="Avatar">
+                            <img *ngIf="p.image" [src]="p.image" alt="Avatar" loading="lazy" width="36" height="36">
                             <span *ngIf="!p.image">{{ p.avatar }}</span>
                         </div>
                         <div class="player-info">

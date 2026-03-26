@@ -22,8 +22,8 @@
                 </div>
                 <div class="session-header-actions-wrapper">
                     <div class="session-header-actions" *ngIf="userRole === 'Admin'">
-                        <button class="action-btn-sm" (click)="openEditModal(s)" title="Edit">✏️</button>
-                        <button class="action-btn-sm danger" (click)="deleteSession(s.id)" title="Delete">🗑️</button>
+                        <button class="action-btn-sm" aria-label="Edit session" (click)="openEditModal(s)" title="Edit">✏️</button>
+                        <button class="action-btn-sm danger" aria-label="Delete session" (click)="deleteSession(s.id)" title="Delete">🗑️</button>
                     </div>
                     <span class="badge" [ngClass]="getStatusClass(s.status)">{{ s.status }}</span>
                 </div>

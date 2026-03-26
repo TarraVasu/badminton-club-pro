@@ -11,15 +11,15 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, title: 'Login | Birdie Beasts' },
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'players', component: PlayersComponent, canActivate: [AuthGuard] },
-  { path: 'matches', component: MatchesComponent, canActivate: [AuthGuard] },
-  { path: 'sessions', component: SessionsComponent, canActivate: [AuthGuard] },
-  { path: 'payments', component: PaymentsComponent, canActivate: [AuthGuard] },
-  { path: 'leaderboard', component: LeaderboardComponent, canActivate: [AuthGuard] },
-  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard], title: 'Dashboard | Birdie Beasts' },
+  { path: 'players', component: PlayersComponent, canActivate: [AuthGuard], title: 'Players Directory | Birdie Beasts' },
+  { path: 'matches', component: MatchesComponent, canActivate: [AuthGuard], title: 'Matches | Birdie Beasts' },
+  { path: 'sessions', component: SessionsComponent, canActivate: [AuthGuard], title: 'Sessions | Birdie Beasts' },
+  { path: 'payments', component: PaymentsComponent, canActivate: [AuthGuard], title: 'Payments | Birdie Beasts' },
+  { path: 'leaderboard', component: LeaderboardComponent, canActivate: [AuthGuard], title: 'Leaderboard | Birdie Beasts' },
+  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard], title: 'My Profile | Birdie Beasts' },
   { path: '**', redirectTo: 'dashboard' },
 ];
 
